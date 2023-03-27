@@ -5,8 +5,8 @@ public class Main {
         ClientMQTT clientMQTT = new ClientMQTT("EX: tcp://broker.mqttdashboard.com:1883", null, null);
         clientMQTT.start();
         Thread.sleep(1000);
-        String mensagem = "Teste de MQTT ";
+        String message = "Teste de MQTT ";
 
-        clientMQTT.publish("teste", mensagem.getBytes(), 0);
+        clientMQTT.publish("teste", message.getBytes(), 0);
     }
 }
