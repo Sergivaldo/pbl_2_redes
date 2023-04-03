@@ -1,4 +1,4 @@
-package br.uefs;
+package br.uefs.api_rest;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
