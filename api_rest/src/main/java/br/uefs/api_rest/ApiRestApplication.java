@@ -5,10 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class ApiRestApplication {
-	private static Car car = null;
-	public static synchronized int getBattery(){
-		return car.getBattery();
-	}
+	public static Car car = null;
+
 
 	public static void main(String[] args) {
 

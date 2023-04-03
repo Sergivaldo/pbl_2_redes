@@ -70,7 +70,7 @@ public class ClientMQTT implements MqttCallbackExtended {
         }
     }
 
-    public void start() {
+    public void startOn() {
         try {
             System.out.println("Conectando no broker MQTT em " + serverURI);
             client = new MqttClient(serverURI, String.format("cliente_java_%d", System.currentTimeMillis()), new MqttDefaultFilePersistence(System.getProperty("java.io.tmpdir")));

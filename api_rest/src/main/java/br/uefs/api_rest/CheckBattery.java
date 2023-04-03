@@ -7,7 +7,8 @@ public class CheckBattery extends Thread{
         try {
             while (true) {
                 Thread.sleep(checkInterval);
-                if (ApiRestApplication.getBattery() <= 30) {
+                if (ApiRestApplication.car.getBattery() <= 30) {
+
                     // Selecionar um posto usando a classe SelectGasStation
                 }
             }
