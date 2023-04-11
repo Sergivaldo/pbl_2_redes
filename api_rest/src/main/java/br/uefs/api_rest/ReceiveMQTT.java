@@ -8,10 +8,19 @@ public class ReceiveMQTT implements IMqttMessageListener {
     }
 
     @Override
-    public void messageArrived(String topico, MqttMessage mm) throws Exception {
-        System.out.println("Mensagem recebida:");
-        System.out.println("\tTópico: " + topico);
-        System.out.println("\tMensagem: " + new String(mm.getPayload()));
-        System.out.println("");
+    public void messageArrived(String topic, MqttMessage mm) throws Exception {
+        // Formato da menssagem: localizaçãox/localizaçãoy/nome_do_posto/idGasStation/carros_na_fila/tempo_de_recarga_por_carro
+        System.out.println("Novo posto adicionado");
+        String message = new String(mm.getPayload());
+        System.out.println(message);
+        String[] parameters = message.split("/");
+
+        if (ComunicationMQTT.listGasStations.get(parameters[3]) == null){
+            int[] locationCoordinates = new int[2];
+            locationCoordinates[0] = Integer.parseInt(parameters[0]);
+            locationCoordinates[1] = Integer.parseInt(parameters[1]);
+            GasStation gasStation = new GasStation(locationCoordinates, parameters[2], parameters[3], Integer.parseInt(parameters[4]),Integer.parseInt(parameters[5]));
+            ComunicationMQTT.listGasStations.put(parameters[3], gasStation);
+        }
     }
 }

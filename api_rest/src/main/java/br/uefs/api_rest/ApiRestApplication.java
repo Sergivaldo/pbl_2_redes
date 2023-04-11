@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ApiRestApplication {
 	public static Car car = null;
-
+	public static GasStation bestGasStation = null;
 
 	public static void main(String[] args) {
 
