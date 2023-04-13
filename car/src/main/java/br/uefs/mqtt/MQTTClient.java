@@ -1,56 +1,52 @@
-package br.uefs.api_rest;
+package br.uefs.mqtt;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 
 import java.util.Arrays;
 
-public class ClientMQTT implements MqttCallbackExtended {
+public class MQTTClient {
 
     private final String serverURI;
     private MqttClient client;
     private final MqttConnectOptions mqttOptions;
 
-    public ClientMQTT(String serverURI, String user, String password) {
-        this.serverURI = serverURI;
+    private final int subscribeQos = 0;
 
+    public MQTTClient(String serverURI, String user, String password) {
+        this.serverURI = serverURI;
         mqttOptions = new MqttConnectOptions();
-        mqttOptions.setMaxInflight(200);
-        mqttOptions.setConnectionTimeout(3);
-        mqttOptions.setKeepAliveInterval(10);
-        mqttOptions.setAutomaticReconnect(true);
-        mqttOptions.setCleanSession(false);
 
         if (user != null && password != null) {
             mqttOptions.setUserName(user);
             mqttOptions.setPassword(password.toCharArray());
         }
+
+        defaultMqttOptions();
+    }
+
+    private void defaultMqttOptions(){
+        mqttOptions.setMaxInflight(200);
+        mqttOptions.setConnectionTimeout(3);
+        mqttOptions.setKeepAliveInterval(10);
+        mqttOptions.setAutomaticReconnect(true);
+        mqttOptions.setCleanSession(false);
     }
 
     /**
-     * Se increver em tópicos
      *
-     * @param qos
-     * @param gestorMensagemMQTT
-     * @param topics
+     * @param topic
+     * @param listener
      * @return
      */
-    public IMqttToken subscribe(int qos, IMqttMessageListener gestorMensagemMQTT, String... topics) {
-        if (client == null || topics.length == 0) {
+    public IMqttToken subscribe(String topic, IMqttMessageListener listener) {
+        if (client == null || topic.length() == 0) {
             return null;
         }
-        int size = topics.length;
-        int[] qoss = new int[size];
-        IMqttMessageListener[] listners = new IMqttMessageListener[size];
-
-        for (int i = 0; i < size; i++) {
-            qoss[i] = qos;
-            listners[i] = gestorMensagemMQTT;
-        }
         try {
-            return client.subscribeWithResponse(topics, qoss, listners);
+            return client.subscribeWithResponse(topic, subscribeQos, listener);
         } catch (MqttException ex) {
-            System.out.println(String.format("Erro ao se inscrever nos tópicos %s - %s", Arrays.asList(topics), ex));
+            System.out.println(String.format("Erro ao se inscrever no tópico %s - %s", topic, ex));
             return null;
         }
     }
@@ -73,8 +69,9 @@ public class ClientMQTT implements MqttCallbackExtended {
     public void startOn() {
         try {
             System.out.println("Conectando no broker MQTT em " + serverURI);
-            client = new MqttClient(serverURI, String.format("cliente_java_%d", System.currentTimeMillis()), new MqttDefaultFilePersistence(System.getProperty("java.io.tmpdir")));
-            client.setCallback(this);
+            client = new MqttClient(serverURI,
+                    String.format("%d", System.currentTimeMillis()),
+                    new MqttDefaultFilePersistence(System.getProperty("java.io.tmpdir")));
             client.connect(mqttOptions);
         } catch (MqttException ex) {
             System.out.println("Erro ao se conectar ao broker mqtt " + serverURI + " - " + ex);
@@ -97,7 +94,7 @@ public class ClientMQTT implements MqttCallbackExtended {
         publish(topic, payload, qos, false);
     }
 
-    public synchronized void publish(String topic, byte[] payload, int qos, boolean retained) {
+    public void publish(String topic, byte[] payload, int qos, boolean retained) {
         try {
             if (client.isConnected()) {
                 client.publish(topic, payload, qos, retained);
@@ -108,25 +105,5 @@ public class ClientMQTT implements MqttCallbackExtended {
         } catch (MqttException ex) {
             System.out.println("Erro ao publicar " + topic + " - " + ex);
         }
-    }
-
-    @Override
-    public void connectComplete(boolean b, String s) {
-
-    }
-
-    @Override
-    public void connectionLost(Throwable throwable) {
-
-    }
-
-    @Override
-    public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-
-    }
-
-    @Override
-    public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
     }
 }
