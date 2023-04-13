@@ -1,28 +1,46 @@
 package br.uefs.gas_station;
 
-import lombok.Builder;
+import br.uefs.mqtt.MQTTClient;
+import br.uefs.utils.Mapper;
+import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
 
+import static br.uefs.mqtt.Topics.GAS_STATION_PUBLISH_STATUS;
+
 @Getter
 @Setter
-@Builder
-public class GasStation {
+public class GasStation extends Thread{
     private int[] coordinates;
-    private String name;
-    private String id;
+    private String stationName;
+    private String stationId;
     private int carsInLine;
-    private int currentRechargeTime;
+    private int rechargeTime;
+    private int updateTime = 1000;
+    private MQTTClient mqttClient;
 
-    private GasStation(int[] coordinates, String name, String id, int carsInLine, int currentRechargeTime) {
+    public GasStation(int[] coordinates, String name, String stationId, int carsInLine, int rechargeTime, MQTTClient mqttClient) {
         this.coordinates = coordinates;
-        this.name = name;
-        this.id = id;
+        this.stationName = name;
+        this.stationId = stationId;
         this.carsInLine = carsInLine;
-        this.currentRechargeTime = currentRechargeTime;
+        this.rechargeTime = rechargeTime;
+        this.mqttClient = mqttClient;
+        mqttClient.startOn();
     }
+    @Override
+    public void run(){
+        Gson gson = new Gson();
+        while(true){
+            try {
+                Thread.sleep(updateTime);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
-    public float getWaitingTime(){
-        return carsInLine * currentRechargeTime;
+            String message = gson.toJson(Mapper.toGasStationReference(this));
+            System.out.println(message);
+            mqttClient.publish(GAS_STATION_PUBLISH_STATUS.getValue(), message.getBytes(), 0);
+        }
     }
 }

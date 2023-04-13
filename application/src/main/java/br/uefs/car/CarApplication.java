@@ -1,6 +1,7 @@
 package br.uefs.car;
 
 import br.uefs.gas_station.GasStation;
+import br.uefs.mqtt.MQTTClient;
 
 public class CarApplication {
     public static Car car;
@@ -14,6 +15,8 @@ public class CarApplication {
         float distanceForKMRateByPercentage = 4;
         float timePerKmTraveled = 2;
 
-        car = new Car(location,idCar,battery,distanceForKMRateByPercentage,timePerKmTraveled);
+        MQTTClient MQTTClient = new MQTTClient("tcp://127.0.0.1:1883", null, null);
+        car = new Car(location,idCar,distanceForKMRateByPercentage,timePerKmTraveled, MQTTClient);
+
     }
 }
