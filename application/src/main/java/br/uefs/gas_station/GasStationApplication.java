@@ -1,19 +1,17 @@
 package br.uefs.gas_station;
 
 import br.uefs.mqtt.MQTTClient;
+import br.uefs.mqtt.MQTTClientParser;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class GasStationApplication {
     public static void main(String[] args) {
-        MQTTClient mqttClient = new MQTTClient("tcp://127.0.0.1:1883", null, null);
-        GasStation gasStation = new GasStation(
-                new int[]{100,50},
-                "posto1",
-                "0001",
-                5,
-                10,
-                mqttClient
-        );
-
+        List<String> properties = Arrays.asList(args);
+        MQTTClient mqttClient = MQTTClientParser.parseMQTTClient(properties);
+        GasStation gasStation = GasStationParser.parseGasStation(properties);
+        gasStation.setMqttClient(mqttClient);
         gasStation.start();
     }
 }

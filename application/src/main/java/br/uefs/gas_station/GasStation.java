@@ -3,6 +3,7 @@ package br.uefs.gas_station;
 import br.uefs.mqtt.MQTTClient;
 import br.uefs.utils.Mapper;
 import com.google.gson.Gson;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +20,7 @@ public class GasStation extends Thread{
     private int updateTime = 1000;
     private MQTTClient mqttClient;
 
+    @Builder
     public GasStation(int[] coordinates, String name, String stationId, int carsInLine, int rechargeTime, MQTTClient mqttClient) {
         this.coordinates = coordinates;
         this.stationName = name;
@@ -26,10 +28,10 @@ public class GasStation extends Thread{
         this.carsInLine = carsInLine;
         this.rechargeTime = rechargeTime;
         this.mqttClient = mqttClient;
-        mqttClient.startOn();
     }
     @Override
     public void run(){
+        mqttClient.startOn();
         Gson gson = new Gson();
         while(true){
             try {

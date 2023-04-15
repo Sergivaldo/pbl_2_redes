@@ -20,8 +20,8 @@ public class Mapper {
     public static CarDTO toCarDTO(Car car) {
         return CarDTO.builder()
                 .idCar(car.getIdCar())
-                .distanceForKMRateByPercentage(car.getDistanceForKMRateByPercentage())
-                .timePerKmTraveled(car.getTimePerKmTraveled())
+                .distanceForKMRateByPercentage(car.getDistanceByBatteryPercent())
+                .timePerKmTraveled(car.getTimePerDistanceTraveled())
                 .currentBatteryCharge(car.getBattery().getCurrentCharge())
                 .coordinates(car.getCoordinates())
                 .build();

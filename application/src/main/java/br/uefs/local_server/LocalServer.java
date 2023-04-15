@@ -13,15 +13,24 @@ import java.util.Map;
 
 import static br.uefs.mqtt.Topics.*;
 
-public class LocalServer {
+public class LocalServer extends Thread{
     private MQTTClient mqttClient;
     private Map<String, GasStationDTO> gasStations;
 
     public LocalServer(final MQTTClient mqttClient, final Map<String, GasStationDTO> gasStations) {
         this.mqttClient = mqttClient;
         this.gasStations = gasStations;
+    }
+
+    @Override
+    public void run(){
         mqttClient.startOn();
         subscribeToTopics();
+        listen();
+    }
+
+    private void listen(){
+        while (true);
     }
 
     private void subscribeToTopics() {
@@ -46,7 +55,7 @@ public class LocalServer {
         return Math.pow((x0_x1 + y0_y1), 0.5);
     }
 
-    public GasStation selectBestGasStation(CarDTO car, Map gasStations) {
+    private GasStation selectBestGasStation(CarDTO car, Map gasStations) {
         GasStation bestGasStation = null;
         double bestTime = 0;
         float maximumDistance = car.getDistanceForKMRateByPercentage() * car.getCurrentBatteryCharge();
@@ -67,5 +76,6 @@ public class LocalServer {
         }
         return bestGasStation;
     }
+
 
 }

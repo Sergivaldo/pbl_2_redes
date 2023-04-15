@@ -1,9 +1,10 @@
 package br.uefs.mqtt;
 
+import br.uefs.utils.Log;
+import lombok.Builder;
 import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
-
-import java.util.Arrays;
 
 public class MQTTClient {
 
@@ -13,6 +14,12 @@ public class MQTTClient {
 
     private final int subscribeQos = 0;
 
+    @Builder
+    public MQTTClient(String serverURI){
+        this.serverURI = serverURI;
+        mqttOptions = new MqttConnectOptions();
+        defaultMqttOptions();
+    }
     public MQTTClient(String serverURI, String user, String password) {
         this.serverURI = serverURI;
         mqttOptions = new MqttConnectOptions();
@@ -46,7 +53,7 @@ public class MQTTClient {
         try {
             return client.subscribeWithResponse(topic, subscribeQos, listener);
         } catch (MqttException ex) {
-            System.out.println(String.format("Erro ao se inscrever no tópico %s - %s", topic, ex));
+            Log.error("Erro ao se inscrever no tópico " + topic);
             return null;
         }
     }
@@ -62,19 +69,19 @@ public class MQTTClient {
         try {
             client.unsubscribe(topics);
         } catch (MqttException ex) {
-            System.out.println(String.format("Erro ao se desinscrever no tópico %s - %s", Arrays.asList(topics), ex));
+            Log.error("Erro ao se desinscrever no tópico");
         }
     }
 
     public void startOn() {
         try {
-            System.out.println("Conectando no broker MQTT em " + serverURI);
+            Log.info("Conectando no broker MQTT em " + serverURI);
             client = new MqttClient(serverURI,
                     String.format("%d", System.currentTimeMillis()),
-                    new MqttDefaultFilePersistence(System.getProperty("java.io.tmpdir")));
+                    new MemoryPersistence());
             client.connect(mqttOptions);
         } catch (MqttException ex) {
-            System.out.println("Erro ao se conectar ao broker mqtt " + serverURI + " - " + ex);
+            Log.error("Erro ao se conectar ao broker mqtt " + serverURI + " - " + ex);
         }
     }
 
@@ -86,7 +93,7 @@ public class MQTTClient {
             client.disconnect();
             client.close();
         } catch (MqttException ex) {
-            System.out.println("Erro ao desconectar do broker mqtt - " + ex);
+            Log.error("Erro ao desconectar do broker mqtt - " + ex);
         }
     }
 
@@ -98,12 +105,12 @@ public class MQTTClient {
         try {
             if (client.isConnected()) {
                 client.publish(topic, payload, qos, retained);
-                System.out.println(String.format("Tópico %s publicado. %dB", topic, payload.length));
+                Log.info(String.format("Tópico %s publicado. %dB", topic, payload.length));
             } else {
-                System.out.println("Cliente desconectado, não foi possível publicar o tópico " + topic);
+                Log.error("Cliente desconectado, não foi possível publicar o tópico " + topic);
             }
         } catch (MqttException ex) {
-            System.out.println("Erro ao publicar " + topic + " - " + ex);
+            Log.error("Erro ao publicar " + topic + " - " + ex);
         }
     }
 }

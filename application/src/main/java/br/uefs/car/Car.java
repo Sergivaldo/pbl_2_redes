@@ -5,6 +5,7 @@ import br.uefs.mqtt.MQTTClient;
 import br.uefs.utils.Mapper;
 import com.google.gson.Gson;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,20 +24,23 @@ public class Car {
 
     private int[] coordinates;
     private String idCar;
-    private float distanceForKMRateByPercentage;
-    private float timePerKmTraveled;
+    private float distanceByBatteryPercent;
+    private float timePerDistanceTraveled;
     private final ScheduledExecutorService batteryCheckerExecutor = Executors.newSingleThreadScheduledExecutor();
-    private final Battery battery;
+    private Battery battery;
     private GasStation bestGasStation;
-    private MQTTClient MQTTClient;
+    private MQTTClient mqttClient;
 
-
-    public Car(int[] coordinates, String idCar, float distanceForKMRateByPercentage, float timePerKmTraveled, MQTTClient mqttClient) {
-        this.MQTTClient = mqttClient;
+    @Builder
+    public Car(int[] coordinates, String idCar, float distanceByBatteryPercent, float timePerDistanceTraveled, MQTTClient mqttClient) {
+        this.mqttClient = mqttClient;
         this.coordinates = coordinates;
         this.idCar = idCar;
-        this.distanceForKMRateByPercentage = distanceForKMRateByPercentage;
-        this.timePerKmTraveled = timePerKmTraveled;
+        this.distanceByBatteryPercent = distanceByBatteryPercent;
+        this.timePerDistanceTraveled = timePerDistanceTraveled;
+    }
+
+    public void start() {
         mqttClient.startOn();
         subscribeToTopic();
         battery = new Battery();
@@ -44,7 +48,7 @@ public class Car {
     }
 
     private void subscribeToTopic() {
-        MQTTClient.subscribe(CAR_RECEIVE_GAS_STATION.getValue() + idCar, (s, mqttMessage)
+        mqttClient.subscribe(CAR_RECEIVE_GAS_STATION.getValue() + idCar, (s, mqttMessage)
                 -> bestGasStation = new Gson().fromJson(new String(mqttMessage.getPayload()), GasStation.class));
     }
 
@@ -58,8 +62,7 @@ public class Car {
             if (battery.currentCharge <= 30) {
                 Gson gson = new Gson();
                 String message = gson.toJson(Mapper.toCarDTO(getCar()));
-                System.out.println(message);
-                MQTTClient.publish(CAR_REQUEST_RECHARGE.getValue(), message.getBytes(), 0);
+                mqttClient.publish(CAR_REQUEST_RECHARGE.getValue(), message.getBytes(), 0);
             }
         }
     }
@@ -83,12 +86,13 @@ public class Car {
         private class UpdateDischargeRateTask implements Runnable {
             @Override
             public void run() {
-                int[] rates = {3,5,7};
+                int[] rates = {3, 5, 7};
                 int nextDischargeRate = new Random().nextInt(rates.length);
                 dischargeRate = rates[nextDischargeRate];
                 if (dischargeTask != null) {
                     dischargeTask.cancel(true);
                 }
+                System.out.print("\r\uD83E\uDEAB " + currentCharge + "% ↓(" + dischargeRate + "s)           ");
                 dischargeTask = dischargeExecutor.scheduleAtFixedRate(new DischargeTask(), dischargeRate, dischargeRate, TimeUnit.SECONDS);
             }
         }
@@ -97,9 +101,10 @@ public class Car {
 
             @Override
             public void run() {
-                currentCharge -= currentCharge > 0 ? new Random().nextInt(7) : 0;
-                System.out.println("Battery charge: " + currentCharge + "\nDischarge Rate: " + dischargeRate);
+                currentCharge -= currentCharge > 0 ? 5 : 0;
+                System.out.print("\r\uD83E\uDEAB " + currentCharge + "% ↓(" + dischargeRate + "s)          ");
             }
         }
     }
+
 }
