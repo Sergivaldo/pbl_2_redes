@@ -38,7 +38,7 @@ public class GasStation extends Thread{
                 throw new RuntimeException(e);
             }
 
-            String message = gson.toJson(Mapper.toGasStationReference(this));
+            String message = gson.toJson(Mapper.toGasStationDTO(this));
             System.out.println(message);
             mqttClient.publish(GAS_STATION_PUBLISH_STATUS.getValue(), message.getBytes(), 0);
         }

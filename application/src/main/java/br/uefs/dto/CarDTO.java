@@ -1,11 +1,11 @@
-package br.uefs.car;
+package br.uefs.dto;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class CarReference {
+public class CarDTO {
     private int[] coordinates;
     private String idCar;
     private float distanceForKMRateByPercentage;
