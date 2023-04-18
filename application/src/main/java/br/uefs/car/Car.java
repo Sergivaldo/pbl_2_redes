@@ -62,7 +62,7 @@ public class Car {
             if (battery.currentCharge <= 30) {
                 Gson gson = new Gson();
                 String message = gson.toJson(Mapper.toCarDTO(getCar()));
-                mqttClient.publish(CAR_REQUEST_RECHARGE.getValue(), message.getBytes(), 0);
+                mqttClient.publish(CAR_REQUEST_RECHARGE.getValue(), message.getBytes());
             }
         }
     }

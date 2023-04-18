@@ -7,18 +7,24 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import static br.uefs.mqtt.Topics.GAS_STATION_PUBLISH_STATUS;
 
 @Getter
 @Setter
-public class GasStation extends Thread{
+public class GasStation {
     private int[] coordinates;
     private String stationName;
     private String stationId;
     private int carsInLine;
     private int rechargeTime;
-    private int updateTime = 1000;
     private MQTTClient mqttClient;
+    private ScheduledExecutorService sendMessageExecutor = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledExecutorService uploadSizeQueueExecutor = Executors.newSingleThreadScheduledExecutor();
 
     @Builder
     public GasStation(int[] coordinates, String name, String stationId, int carsInLine, int rechargeTime, MQTTClient mqttClient) {
@@ -29,20 +35,33 @@ public class GasStation extends Thread{
         this.rechargeTime = rechargeTime;
         this.mqttClient = mqttClient;
     }
-    @Override
-    public void run(){
-        mqttClient.startOn();
-        Gson gson = new Gson();
-        while(true){
-            try {
-                Thread.sleep(updateTime);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
 
-            String message = gson.toJson(Mapper.toGasStationDTO(this));
+    public void start() {
+        mqttClient.startOn();
+        sendMessageExecutor.scheduleAtFixedRate(new SendMessageTask(), 0, 2, TimeUnit.SECONDS);
+        sendMessageExecutor.scheduleAtFixedRate(new UploadSizeQueueTask(),0,20,TimeUnit.SECONDS);
+    }
+
+    private GasStation getGasStation() {
+        return this;
+    }
+
+    public class SendMessageTask implements Runnable {
+        private final Gson gson = new Gson();
+
+        @Override
+        public void run() {
+            String message = gson.toJson(Mapper.toGasStationDTO(getGasStation()));
             System.out.println(message);
-            mqttClient.publish(GAS_STATION_PUBLISH_STATUS.getValue(), message.getBytes(), 0);
+            mqttClient.publish(GAS_STATION_PUBLISH_STATUS.getValue(), message.getBytes());
+        }
+    }
+
+    public class UploadSizeQueueTask implements Runnable {
+        @Override
+        public void run() {
+            carsInLine = new Random().nextInt(16);
+            carsInLine = carsInLine > 0? carsInLine:2;
         }
     }
 }

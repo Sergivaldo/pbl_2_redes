@@ -26,11 +26,11 @@ public class GasStationParser {
     }
 
     private static int parseRechargeTime(List<String> properties) throws NoSuchPropertyException {
-        int indexProperty = properties.indexOf("-d");
+        int indexProperty = properties.indexOf("-r");
         if (indexProperty != -1) {
             return Integer.parseInt(properties.get(indexProperty + 1));
         } else {
-            throw new NoSuchPropertyException("-d property not found");
+            throw new NoSuchPropertyException("-r property not found");
         }
     }
 
@@ -55,20 +55,20 @@ public class GasStationParser {
     }
 
     private static int parseCarsInLine(List<String> properties) throws NoSuchPropertyException {
-        int indexProperty = properties.indexOf("-d");
+        int indexProperty = properties.indexOf("-q");
         if (indexProperty != -1) {
             return Integer.parseInt(properties.get(indexProperty + 1));
         } else {
-            throw new NoSuchPropertyException("-d property not found");
+            throw new NoSuchPropertyException("-q property not found");
         }
     }
 
     private static String parseName(List<String> properties) throws NoSuchPropertyException {
-        int indexProperty = properties.indexOf("-i");
+        int indexProperty = properties.indexOf("-n");
         if (indexProperty != -1) {
             return properties.get(indexProperty + 1);
         } else {
-            throw new NoSuchPropertyException("-i property not found");
+            throw new NoSuchPropertyException("-n property not found");
         }
     }
 }

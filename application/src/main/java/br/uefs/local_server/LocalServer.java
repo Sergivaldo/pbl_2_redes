@@ -39,7 +39,7 @@ public class LocalServer extends Thread{
             CarDTO car = gson.fromJson(new String(mqttMessage.getPayload()), CarDTO.class);
             String message = gson.toJson(selectBestGasStation(car, gasStations));
             System.out.println(message);
-            mqttClient.publish(CAR_RECEIVE_GAS_STATION.getValue() + car.getIdCar(), message.getBytes(), 0);
+            mqttClient.publish(CAR_RECEIVE_GAS_STATION.getValue() + car.getIdCar(), message.getBytes());
         });
 
         mqttClient.subscribe(GAS_STATION_PUBLISH_STATUS.getValue(), (s, mqttMessage) -> {

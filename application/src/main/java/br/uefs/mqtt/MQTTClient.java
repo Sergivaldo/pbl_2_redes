@@ -11,8 +11,8 @@ public class MQTTClient {
     private final String serverURI;
     private MqttClient client;
     private final MqttConnectOptions mqttOptions;
-
-    private final int subscribeQos = 0;
+    private final int subscribeQos = 2;
+    private final int publishQos = 0;
 
     @Builder
     public MQTTClient(String serverURI){
@@ -97,8 +97,9 @@ public class MQTTClient {
         }
     }
 
-    public void publish(String topic, byte[] payload, int qos) {
-        publish(topic, payload, qos, false);
+    public void publish(String topic, byte[] payload) {
+
+        publish(topic, payload, publishQos, false);
     }
 
     public void publish(String topic, byte[] payload, int qos, boolean retained) {
