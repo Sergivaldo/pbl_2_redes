@@ -121,7 +121,6 @@ public class MQTTClient{
         try {
             if (client.isConnected()) {
                 client.publish(topic, payload, qos, retained);
-                Log.info(String.format("Tópico %s publicado. %dB", topic, payload.length));
             } else {
                 Log.error("Cliente desconectado, não foi possível publicar o tópico " + topic);
             }

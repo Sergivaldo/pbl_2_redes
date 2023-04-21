@@ -13,7 +13,7 @@ public class Mapper {
                 .coordinates(gasStation.getCoordinates())
                 .rechargeTime(gasStation.getRechargeTime())
                 .stationName(gasStation.getStationName())
-                .carsInLine(gasStation.getCarsInLine())
+                .carsInQueue(gasStation.getCarsInQueue())
                 .build();
     }
 

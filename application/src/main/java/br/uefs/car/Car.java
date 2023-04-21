@@ -1,13 +1,26 @@
 package br.uefs.car;
 
+import br.uefs.dto.GasStationDTO;
 import br.uefs.gas_station.GasStation;
+import br.uefs.mqtt.Listener;
 import br.uefs.mqtt.MQTTClient;
 import br.uefs.utils.Mapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import sergivaldo.framework.FrameworkApplication;
+import sergivaldo.framework.http.HttpRoute;
+import sergivaldo.framework.http.HttpRouteMethod;
+import sergivaldo.framework.http.HttpRouter;
+import sergivaldo.framework.http.message.HttpMessageHandler;
+import sergivaldo.framework.http.message.HttpMessageParser;
+import sergivaldo.framework.http.message.request.DefaultHttpMethods;
+import sergivaldo.framework.http.message.response.HttpResponse;
+import sergivaldo.framework.http.message.response.HttpStatus;
+import sergivaldo.framework.socket.Configuration;
 
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -28,8 +41,9 @@ public class Car {
     private float timePerDistanceTraveled;
     private final ScheduledExecutorService batteryCheckerExecutor = Executors.newSingleThreadScheduledExecutor();
     private Battery battery;
-    private GasStation bestGasStation;
+    private GasStationDTO bestGasStation;
     private MQTTClient mqttClient;
+    private CarInterface carInterface = new CarInterface();
 
     @Builder
     public Car(int[] coordinates, String idCar, float distanceByBatteryPercent, float timePerDistanceTraveled, MQTTClient mqttClient) {
@@ -45,11 +59,12 @@ public class Car {
         subscribeToTopic();
         battery = new Battery();
         batteryCheckerExecutor.scheduleAtFixedRate(new BatteryChecker(), 0, 2, TimeUnit.SECONDS);
+        carInterface.start();
     }
 
     private void subscribeToTopic() {
-        mqttClient.subscribe(CAR_RECEIVE_GAS_STATION.getValue() + idCar, (s, mqttMessage)
-                -> bestGasStation = new Gson().fromJson(new String(mqttMessage.getPayload()), GasStation.class));
+        mqttClient.subscribe(CAR_RECEIVE_GAS_STATION.getValue() + idCar, new Listener((mqttMessage)
+                -> bestGasStation = new Gson().fromJson(new String(mqttMessage.getPayload()), GasStationDTO.class)));
 
     }
 
@@ -70,7 +85,7 @@ public class Car {
 
     @Getter
     public class Battery {
-        private int currentCharge = 100;
+        private int currentCharge = 40;
         private int dischargeRate;
         @Getter(AccessLevel.NONE)
         private final ScheduledExecutorService dischargeExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -105,6 +120,34 @@ public class Car {
                 currentCharge -= currentCharge > 0 ? 5 : 0;
                 System.out.print("\r\uD83E\uDEAB " + currentCharge + "% ↓(" + dischargeRate + "s)          ");
             }
+        }
+    }
+
+    private class CarInterface {
+        public void start() {
+            HttpRouter router = new HttpRouter();
+            HttpRoute route = new HttpRoute("/best_gas_station");
+            HttpRouteMethod httpRouteMethod = new HttpRouteMethod(DefaultHttpMethods.GET, r -> {
+                HttpResponse response;
+                if (bestGasStation != null) {
+                    response = new HttpResponse(HttpStatus.OK, bestGasStation.toString());
+                } else {
+                    JsonObject json = new JsonObject();
+                    json.addProperty("message", "Gas station not available");
+                    response = new HttpResponse(HttpStatus.OK, json.toString());
+                }
+
+                return response;
+            });
+            route.addMethod(httpRouteMethod);
+            router.addRoute(route);
+            FrameworkApplication api = new FrameworkApplication(
+                    new Configuration(),
+                    router,
+                    new HttpMessageHandler(),
+                    new HttpMessageParser()
+            );
+            api.start();
         }
     }
 

@@ -2,13 +2,13 @@ package br.uefs.local_server;
 
 import br.uefs.dto.CarDTO;
 import br.uefs.dto.GasStationDTO;
-import br.uefs.gas_station.GasStation;
 import br.uefs.mqtt.Listener;
 import br.uefs.mqtt.MQTTClient;
 import com.google.gson.Gson;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 import static br.uefs.mqtt.Topics.*;
 
@@ -37,16 +37,14 @@ public class LocalServer extends Thread {
             Gson gson = new Gson();
             String payload = new String(mqttMessage.getPayload());
             CarDTO car = gson.fromJson(payload, CarDTO.class);
-            String message = gson.toJson(selectBestGasStation(car, gasStations));
-            System.out.println("best station ->" + message);
+            String message = gson.toJson(selectBestGasStation(car,gasStations));
+            mqttClient.publish(CAR_RECEIVE_GAS_STATION.getValue() + car.getIdCar(), message.getBytes());
         }));
 
         mqttClient.subscribe(GAS_STATION_PUBLISH_STATUS.getValue(), new Listener(mqttMessage -> {
             String payload = new String(mqttMessage.getPayload());
             GasStationDTO gasStation = new Gson().fromJson(payload, GasStationDTO.class);
             gasStations.put(gasStation.getStationName(), gasStation);
-            System.out.println(payload);
-
         }));
     }
 
@@ -65,7 +63,7 @@ public class LocalServer extends Thread {
             GasStationDTO gasStation = itr.next().getValue();
             double distance = getDistance(car.getCoordinates(), gasStation.getCoordinates());
             if (maximumDistance >= distance) {
-                float waitingTime = gasStation.getCarsInLine() * gasStation.getRechargeTime();
+                float waitingTime = gasStation.getCarsInQueue() * gasStation.getRechargeTime();
                 double time = waitingTime + (car.getTimePerKmTraveled() * distance);
                 if (bestTime == 0 || time < bestTime) {
                     bestTime = time;
@@ -73,6 +71,7 @@ public class LocalServer extends Thread {
                 }
             }
         }
+
         return bestGasStation;
     }
 

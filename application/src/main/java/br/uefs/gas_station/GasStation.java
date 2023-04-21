@@ -3,6 +3,7 @@ package br.uefs.gas_station;
 import br.uefs.mqtt.MQTTClient;
 import br.uefs.utils.Mapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,18 +21,18 @@ public class GasStation {
     private int[] coordinates;
     private String stationName;
     private String stationId;
-    private int carsInLine;
+    private int carsInQueue;
     private int rechargeTime;
     private MQTTClient mqttClient;
     private ScheduledExecutorService sendMessageExecutor = Executors.newSingleThreadScheduledExecutor();
     private ScheduledExecutorService uploadSizeQueueExecutor = Executors.newSingleThreadScheduledExecutor();
 
     @Builder
-    public GasStation(int[] coordinates, String name, String stationId, int carsInLine, int rechargeTime, MQTTClient mqttClient) {
+    public GasStation(int[] coordinates, String name, String stationId, int carsInQueue, int rechargeTime, MQTTClient mqttClient) {
         this.coordinates = coordinates;
         this.stationName = name;
         this.stationId = stationId;
-        this.carsInLine = carsInLine;
+        this.carsInQueue = carsInQueue;
         this.rechargeTime = rechargeTime;
         this.mqttClient = mqttClient;
     }
@@ -52,7 +53,6 @@ public class GasStation {
         @Override
         public void run() {
             String message = gson.toJson(Mapper.toGasStationDTO(getGasStation()));
-            System.out.println(message);
             mqttClient.publish(GAS_STATION_PUBLISH_STATUS.getValue(), message.getBytes());
         }
     }
@@ -60,8 +60,8 @@ public class GasStation {
     public class UploadSizeQueueTask implements Runnable {
         @Override
         public void run() {
-            carsInLine = new Random().nextInt(16);
-            carsInLine = carsInLine > 0? carsInLine:2;
+            carsInQueue = new Random().nextInt(16);
+            carsInQueue = carsInQueue > 0? carsInQueue :2;
         }
     }
 }

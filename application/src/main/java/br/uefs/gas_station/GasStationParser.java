@@ -13,7 +13,7 @@ public class GasStationParser {
         try {
             newGasStation = GasStation.builder()
                     .name(parseName(properties))
-                    .carsInLine(parseCarsInLine(properties))
+                    .carsInQueue(parseCarsInLine(properties))
                     .coordinates(parseCoordinates(properties))
                     .stationId(parseStationId(properties))
                     .rechargeTime(parseRechargeTime(properties))
