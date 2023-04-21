@@ -40,7 +40,7 @@ public class Car {
     private float distanceByBatteryPercent;
     private float timePerDistanceTraveled;
     private final ScheduledExecutorService batteryCheckerExecutor = Executors.newSingleThreadScheduledExecutor();
-    private Battery battery;
+    private Battery battery = new Battery();
     private GasStationDTO bestGasStation;
     private MQTTClient mqttClient;
     private CarInterface carInterface = new CarInterface();
@@ -57,7 +57,7 @@ public class Car {
     public void start() {
         mqttClient.startOn();
         subscribeToTopic();
-        battery = new Battery();
+        battery.start();
         batteryCheckerExecutor.scheduleAtFixedRate(new BatteryChecker(), 0, 2, TimeUnit.SECONDS);
         carInterface.start();
     }
@@ -85,7 +85,8 @@ public class Car {
 
     @Getter
     public class Battery {
-        private int currentCharge = 40;
+        @Setter
+        private int currentCharge;
         private int dischargeRate;
         @Getter(AccessLevel.NONE)
         private final ScheduledExecutorService dischargeExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -95,7 +96,7 @@ public class Car {
 
         private ScheduledFuture dischargeTask;
 
-        public Battery() {
+        public void start(){
             updateRateExecutor.scheduleAtFixedRate(new UpdateDischargeRateTask(), 0, 10, TimeUnit.SECONDS);
         }
 

@@ -1,5 +1,6 @@
 package br.uefs.car;
 
+import br.uefs.exceptions.InvalidChargeBatteryException;
 import br.uefs.exceptions.NoSuchPropertyException;
 import br.uefs.utils.Log;
 
@@ -18,7 +19,10 @@ public class CarParser {
                     .coordinates(parseCoordinates(properties))
                     .timePerDistanceTraveled(parseTimePerDistanceTraveled(properties))
                     .build();
+            newCar.getBattery().setCurrentCharge(parseCurrentBatteryCharge(properties));
         } catch (NoSuchPropertyException e) {
+            e.printStackTrace();
+        } catch (InvalidChargeBatteryException e) {
             e.printStackTrace();
         }
         return newCar;
@@ -59,6 +63,20 @@ public class CarParser {
             return Float.parseFloat(properties.get(indexProperty + 1));
         } else {
             throw new NoSuchPropertyException("-t property not found");
+        }
+    }
+
+    private static int parseCurrentBatteryCharge(List<String> properties) throws NoSuchPropertyException, InvalidChargeBatteryException {
+        int indexProperty = properties.indexOf("-b");
+        if (indexProperty != -1) {
+            int value = Integer.parseInt(properties.get(indexProperty + 1));
+            if(value >= 0 && value <= 100){
+                return value;
+            }else{
+                throw new InvalidChargeBatteryException("value not acceptable");
+            }
+        } else {
+            throw new NoSuchPropertyException("-b property not found");
         }
     }
 
