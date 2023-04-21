@@ -4,22 +4,23 @@ import br.uefs.utils.Log;
 import lombok.Builder;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 
-public class MQTTClient {
+import java.util.Arrays;
 
+public class MQTTClient{
     private final String serverURI;
-    private MqttClient client;
+    private MqttAsyncClient client;
     private final MqttConnectOptions mqttOptions;
     private final int subscribeQos = 2;
     private final int publishQos = 0;
 
     @Builder
-    public MQTTClient(String serverURI){
+    public MQTTClient(String serverURI) {
         this.serverURI = serverURI;
         mqttOptions = new MqttConnectOptions();
         defaultMqttOptions();
     }
+
     public MQTTClient(String serverURI, String user, String password) {
         this.serverURI = serverURI;
         mqttOptions = new MqttConnectOptions();
@@ -32,16 +33,15 @@ public class MQTTClient {
         defaultMqttOptions();
     }
 
-    private void defaultMqttOptions(){
+    private void defaultMqttOptions() {
         mqttOptions.setMaxInflight(200);
         mqttOptions.setConnectionTimeout(3);
-        mqttOptions.setKeepAliveInterval(10);
+        mqttOptions.setKeepAliveInterval(1000000);
         mqttOptions.setAutomaticReconnect(true);
-        mqttOptions.setCleanSession(false);
+        mqttOptions.setCleanSession(true);
     }
 
     /**
-     *
      * @param topic
      * @param listener
      * @return
@@ -50,8 +50,11 @@ public class MQTTClient {
         if (client == null || topic.length() == 0) {
             return null;
         }
+
         try {
-            return client.subscribeWithResponse(topic, subscribeQos, listener);
+            IMqttToken token = client.subscribe(topic, subscribeQos, listener);
+            Log.success("Inscrito no tópico: "+ topic);
+            return token;
         } catch (MqttException ex) {
             Log.error("Erro ao se inscrever no tópico " + topic);
             return null;
@@ -59,7 +62,6 @@ public class MQTTClient {
     }
 
     /**
-     *
      * @param topics
      */
     public void unsubscribe(String... topics) {
@@ -75,13 +77,22 @@ public class MQTTClient {
 
     public void startOn() {
         try {
-            Log.info("Conectando no broker MQTT em " + serverURI);
-            client = new MqttClient(serverURI,
+            client = new MqttAsyncClient(serverURI,
                     String.format("%d", System.currentTimeMillis()),
                     new MemoryPersistence());
-            client.connect(mqttOptions);
+            client.connect(mqttOptions, null, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken iMqttToken) {
+                    Log.success("Conectado ao broker: " + serverURI);
+                }
+
+                @Override
+                public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                    Log.error("Erro ao se conectar ao broker mqtt " + serverURI);
+                }
+            }).waitForCompletion();
         } catch (MqttException ex) {
-            Log.error("Erro ao se conectar ao broker mqtt " + serverURI + " - " + ex);
+            ex.printStackTrace();
         }
     }
 
@@ -102,6 +113,10 @@ public class MQTTClient {
         publish(topic, payload, publishQos, false);
     }
 
+    public boolean connected() {
+        return client.isConnected();
+    }
+
     public void publish(String topic, byte[] payload, int qos, boolean retained) {
         try {
             if (client.isConnected()) {
@@ -114,4 +129,6 @@ public class MQTTClient {
             Log.error("Erro ao publicar " + topic + " - " + ex);
         }
     }
+
+
 }
