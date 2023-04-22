@@ -65,7 +65,6 @@ public class Car {
     private void subscribeToTopic() {
         mqttClient.subscribe(CAR_RECEIVE_GAS_STATION.getValue() + idCar, new Listener((mqttMessage)
                 -> bestGasStation = new Gson().fromJson(new String(mqttMessage.getPayload()), GasStationDTO.class)));
-
     }
 
     public Car getCar() {
