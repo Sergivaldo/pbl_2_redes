@@ -36,7 +36,7 @@ public class LocalServer extends Thread {
     }
 
     //GasStationDTO
-    private GasStationDTO requeredCentralServer(CarDTO car) throws IOException {
+    private static GasStationDTO requeredCentralServer(CarDTO car) throws IOException {
         String message = new Gson().toJson(car);
 
         Socket socket = new Socket("localhost", 9090);
@@ -71,14 +71,14 @@ public class LocalServer extends Thread {
         }));
     }
 
-    private double getDistance(int[] coordinatesCar, int[] coordinatesGasStation) {
+    private static double getDistance(int[] coordinatesCar, int[] coordinatesGasStation) {
         double x0_x1 = Math.pow((coordinatesCar[0] - coordinatesGasStation[0]), 2);
         double y0_y1 = Math.pow((coordinatesCar[1] - coordinatesGasStation[1]), 2);
         return Math.sqrt(x0_x1 + y0_y1);
     }
 
-    @SneakyThrows
-    private GasStationDTO selectBestGasStation(CarDTO car, Map<String,GasStationDTO> gasStations){
+
+    public static GasStationDTO selectBestGasStation(CarDTO car, Map<String,GasStationDTO> gasStations){
         GasStationDTO bestGasStation = null;
         double bestTime = 0;
         if(!gasStations.isEmpty()){
@@ -101,7 +101,13 @@ public class LocalServer extends Thread {
             return bestGasStation;// se o tempo de recarga do melhor posto local estiver dentro do aceitável
         }else{
             //requeredCentralServer(car):  pedir o melhor posto fora da nevoa para este carro
-            GasStationDTO newGasStation = requeredCentralServer(car);
+
+            GasStationDTO newGasStation = null;
+            try {
+                newGasStation = requeredCentralServer(car);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             if(newGasStation != null){
                 float timeWaiting = newGasStation.getCarsInQueue() * newGasStation.getRechargeTime();
                 double distance = getDistance(car.getCoordinates(), newGasStation.getCoordinates());

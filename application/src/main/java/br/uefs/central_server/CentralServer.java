@@ -1,6 +1,5 @@
 package br.uefs.central_server;
 
-import br.uefs.car.Car;
 import br.uefs.dto.CarDTO;
 import br.uefs.dto.GasStationDTO;
 import com.google.gson.Gson;
@@ -11,20 +10,19 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 
 public class CentralServer extends Thread{
     private Socket socket;
     private Map<String, GasStationDTO> gasStations;
-    private LinkedList<Integer> cloudPorts;
+
     public CentralServer(Socket socket){
         this.socket = socket;
     }
 
     private void receiveGasStations(CarDTO car) throws IOException {
-        for(int i = 0; i < cloudPorts.size(); i++) {
-            Socket socket = new Socket("localhost", cloudPorts.get(i));
+        for(int i = 0; i < CentralServerApplication.cloudPorts.size(); i++) {
+            Socket socket = new Socket("localhost", CentralServerApplication.cloudPorts.get(i));
             PrintStream exit = new PrintStream(socket.getOutputStream());
 
             exit.println(new Gson().toJson(car));
