@@ -3,11 +3,11 @@ package br.uefs.gas_station;
 import br.uefs.mqtt.MQTTClient;
 import br.uefs.utils.Mapper;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.net.http.HttpHeaders;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -40,7 +40,7 @@ public class GasStation {
     public void start() {
         mqttClient.startOn();
         sendMessageExecutor.scheduleAtFixedRate(new SendMessageTask(), 0, 2, TimeUnit.SECONDS);
-        sendMessageExecutor.scheduleAtFixedRate(new UploadSizeQueueTask(),0,20,TimeUnit.SECONDS);
+        sendMessageExecutor.scheduleAtFixedRate(new UploadSizeQueueTask(), 0, 20, TimeUnit.SECONDS);
     }
 
     private GasStation getGasStation() {
@@ -61,7 +61,7 @@ public class GasStation {
         @Override
         public void run() {
             carsInQueue = new Random().nextInt(16);
-            carsInQueue = carsInQueue > 0? carsInQueue :2;
+            carsInQueue = carsInQueue > 0 ? carsInQueue : 2;
         }
     }
 }

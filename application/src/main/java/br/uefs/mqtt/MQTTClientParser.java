@@ -2,6 +2,7 @@ package br.uefs.mqtt;
 
 import br.uefs.exceptions.NoSuchPropertyException;
 import br.uefs.utils.Log;
+import br.uefs.utils.PropertiesParser;
 
 import java.util.List;
 import java.util.Objects;
@@ -12,9 +13,11 @@ public class MQTTClientParser {
     public static MQTTClient parseMQTTClient(List<String> properties) {
         Objects.requireNonNull(properties);
         MQTTClient newMQTTClient = null;
+        PropertiesParser parser = new PropertiesParser(properties);
         try {
+
             newMQTTClient = new MQTTClient.MQTTClientBuilder()
-                    .serverURI(BASE_URL + parseHost(properties) + ":" + parsePort(properties))
+                    .serverURI(BASE_URL + parser.parseString("-h") + ":" + parser.parseString("-p"))
                     .build();
         } catch (NoSuchPropertyException e) {
             e.printStackTrace();
@@ -22,22 +25,4 @@ public class MQTTClientParser {
         return newMQTTClient;
     }
 
-    private static String parseHost(List<String> properties) throws NoSuchPropertyException {
-        int indexProperty = properties.indexOf("-h");
-        if (indexProperty != -1) {
-            return properties.get(indexProperty + 1);
-        } else {
-            throw new NoSuchPropertyException("-h property not found");
-        }
-    }
-
-    private static String parsePort(List<String> properties) throws NoSuchPropertyException {
-        int indexProperty = properties.indexOf("-p");
-
-        if (indexProperty != -1) {
-            return properties.get(indexProperty + 1);
-        } else {
-            throw new NoSuchPropertyException("-p property not found");
-        }
-    }
 }
