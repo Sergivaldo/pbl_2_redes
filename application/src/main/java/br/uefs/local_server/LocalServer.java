@@ -47,7 +47,7 @@ public class LocalServer extends Thread {
         InputStreamReader inputStream = new InputStreamReader(socket.getInputStream());
         BufferedReader reader = new BufferedReader(inputStream);
         String gasStation = reader.readLine();
-        System.out.println("Recebeu do servidor "+ gasStation);
+        System.out.println("Recebeu do servidor: "+ gasStation);
         socket.close();
 
         GasStationDTO gasStationReceived = new Gson().fromJson(gasStation.toString(), GasStationDTO.class);

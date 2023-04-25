@@ -1,7 +1,6 @@
 package br.uefs.car;
 
 import br.uefs.dto.GasStationDTO;
-import br.uefs.gas_station.GasStation;
 import br.uefs.mqtt.Listener;
 import br.uefs.mqtt.MQTTClient;
 import br.uefs.utils.Mapper;
@@ -114,7 +113,6 @@ public class Car {
         }
 
         private class DischargeTask implements Runnable {
-
             @Override
             public void run() {
                 currentCharge -= currentCharge > 0 ? 5 : 0;

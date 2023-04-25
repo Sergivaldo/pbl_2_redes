@@ -35,7 +35,4 @@ public class ReceivedRequisition extends Thread{
             throw new RuntimeException(e);
         }
     }
-
-
-
 }
