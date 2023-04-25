@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.net.http.HttpHeaders;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -62,6 +61,7 @@ public class GasStation {
         public void run() {
             carsInQueue = new Random().nextInt(16);
             carsInQueue = carsInQueue > 0 ? carsInQueue : 2;
+            System.out.println("Carros na fila: "+carsInQueue);
         }
     }
 }

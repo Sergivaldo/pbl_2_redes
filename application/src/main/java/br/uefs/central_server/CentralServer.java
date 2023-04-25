@@ -21,8 +21,8 @@ public class CentralServer extends Thread{
     }
 
     private void receiveGasStations(CarDTO car) throws IOException {
-        for(int i = 0; i < CentralServerApplication.cloudPorts.size(); i++) {
-            Socket socket = new Socket("localhost", CentralServerApplication.cloudPorts.get(i));
+        for(int i = 0; i < CentralServerApplication.cloudPorts.length; i++) {
+            Socket socket = new Socket("localhost", CentralServerApplication.cloudPorts[i]);
             PrintStream exit = new PrintStream(socket.getOutputStream());
 
             exit.println(new Gson().toJson(car));

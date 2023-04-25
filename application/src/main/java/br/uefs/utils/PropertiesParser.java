@@ -21,11 +21,11 @@ public class PropertiesParser {
     }
 
     public float parserFloat(String propertie) {
-        int indexProperty = properties.indexOf("-t");
+        int indexProperty = properties.indexOf(propertie);
         if (indexProperty != -1) {
             return Float.parseFloat(properties.get(indexProperty + 1));
         } else {
-            throw new NoSuchPropertyException("-t property not found");
+            throw new NoSuchPropertyException(propertie+"property not found");
         }
     }
 

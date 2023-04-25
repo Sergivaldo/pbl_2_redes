@@ -1,14 +1,15 @@
 package br.uefs.local_server;
 
-import br.uefs.central_server.CentralServerApplication;
 import br.uefs.dto.CarDTO;
 import br.uefs.dto.GasStationDTO;
 import br.uefs.mqtt.Listener;
 import br.uefs.mqtt.MQTTClient;
 import com.google.gson.Gson;
-import lombok.SneakyThrows;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Iterator;
 import java.util.Map;
@@ -55,6 +56,7 @@ public class LocalServer extends Thread {
     }
 
     private void subscribeToTopics() {
+        //Tópico dos carros
         mqttClient.subscribe(CAR_REQUEST_RECHARGE.getValue(), new Listener(mqttMessage -> {
             Gson gson = new Gson();
             String payload = new String(mqttMessage.getPayload());
@@ -62,12 +64,16 @@ public class LocalServer extends Thread {
             GasStationDTO bestGasStation = selectBestGasStation(car,gasStations);
             String message = gson.toJson(bestGasStation);
             mqttClient.publish(CAR_RECEIVE_GAS_STATION.getValue() + car.getIdCar(), message.getBytes());
+            double distance = getDistance(car.getCoordinates(),bestGasStation.getCoordinates());
+            System.out.println("Carro "+car.getIdCar()+" foi direcionado para o posto: "+bestGasStation.getStationName()+"\nDistancia até o posto: "+distance+"\nTempo para chegar no posto:"+ (car.getTimePerKmTraveled() * distance)+"\n\n");
         }));
 
+        //Tópicos dos postos
         mqttClient.subscribe(GAS_STATION_PUBLISH_STATUS.getValue(), new Listener(mqttMessage -> {
             String payload = new String(mqttMessage.getPayload());
             GasStationDTO gasStation = new Gson().fromJson(payload, GasStationDTO.class);
             gasStations.put(gasStation.getStationName(), gasStation);
+            System.out.println("Posto "+gasStation.getStationName()+" se cadastrou\n"+"Postos cadastrados :"+gasStations.size()+"\n\n");
         }));
     }
 
@@ -82,14 +88,19 @@ public class LocalServer extends Thread {
         GasStationDTO bestGasStation = null;
         double bestTime = 0;
         if(!gasStations.isEmpty()){
+            //System.out.println(car.getDistanceForKMRateByPercentage()+" "+car.getCurrentBatteryCharge());
             float maximumDistance = car.getDistanceForKMRateByPercentage() * car.getCurrentBatteryCharge();
             Iterator<Map.Entry<String, GasStationDTO>> itr = gasStations.entrySet().iterator();
             while (itr.hasNext()) {
                 GasStationDTO gasStation = itr.next().getValue();
                 double distance = getDistance(car.getCoordinates(), gasStation.getCoordinates());
+                //System.out.println(gasStation.getStationId());
+                //System.out.println("Alcance do carro:"+maximumDistance+"   Distancia do posto:"+distance);
                 if (maximumDistance >= distance) {
+                    //System.out.println(gasStation.getStationId());
                     float waitingTime = gasStation.getCarsInQueue() * gasStation.getRechargeTime();
                     double time = waitingTime + (car.getTimePerKmTraveled() * distance);
+                    //System.out.println("Tempo pra chegar no posto:"+time);
                     if (bestTime == 0 || time < bestTime) {
                         bestTime = time;
                         bestGasStation = gasStation;
@@ -97,11 +108,13 @@ public class LocalServer extends Thread {
                 }
             }
         }
-        if(bestTime <= 50 && bestTime > 0){
+        //System.out.println("Aqui:"+bestTime);
+
+        if(bestTime <= 350 && bestTime > 0){
+            //System.out.println("Solicitação interna");
             return bestGasStation;// se o tempo de recarga do melhor posto local estiver dentro do aceitável
         }else{
-            //requeredCentralServer(car):  pedir o melhor posto fora da nevoa para este carro
-
+            //System.out.println("solicitação externa");
             GasStationDTO newGasStation = null;
             try {
                 newGasStation = requeredCentralServer(car);
