@@ -38,6 +38,7 @@
 				<version>3.0.0</version>
 				<executions>
 					<execution>
+						<id>buid-a</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
@@ -54,6 +55,7 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>buid-b</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
@@ -70,6 +72,7 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>buid-c</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
@@ -86,6 +89,7 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>buid-d</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
@@ -102,6 +106,7 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>buid-e</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
