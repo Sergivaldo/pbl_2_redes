@@ -13,12 +13,12 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class CentralServer extends Thread{
-    private Socket socket;
+    private Socket receiverSocket;
     private Map<String, GasStationDTO> gasStations;
     private String serverHost;
 
-    public CentralServer(Socket socket, String serverHost){
-        this.socket = socket;
+    public CentralServer(Socket receiverSocket, String serverHost){
+        this.receiverSocket = receiverSocket;
         this.serverHost = serverHost;
     }
 
@@ -42,14 +42,14 @@ public class CentralServer extends Thread{
     @Override
     public void run(){
         try {
-            InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
+            InputStreamReader inputStreamReader = new InputStreamReader(receiverSocket.getInputStream());
             BufferedReader messageReader = new BufferedReader(inputStreamReader);
             String message = messageReader.readLine();
             System.out.println("Recebeu do cliente" + message);
             CarDTO car = new Gson().fromJson(messageReader, CarDTO.class);
             receiveGasStations(car);
 
-            PrintStream outMessage = new PrintStream(socket.getOutputStream());
+            PrintStream outMessage = new PrintStream(receiverSocket.getOutputStream());
             outMessage.println(new Gson().toJson(selectBestGasStation(car, gasStations)));
 
         }catch (IOException e){

@@ -20,7 +20,6 @@ public class LocalServer extends Thread {
     private MQTTClient mqttClient;
     private Map<String, GasStationDTO> gasStations;
 
-
     public LocalServer(final MQTTClient mqttClient, final Map<String, GasStationDTO> gasStations) {
         this.mqttClient = mqttClient;
         this.gasStations = gasStations;
