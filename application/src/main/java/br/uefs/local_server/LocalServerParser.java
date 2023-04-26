@@ -1,6 +1,5 @@
 package br.uefs.local_server;
 
-import br.uefs.central_server.CentralServerApplication;
 import br.uefs.exceptions.NoSuchPropertyException;
 import br.uefs.utils.PropertiesParser;
 
@@ -12,7 +11,7 @@ public class LocalServerParser {
         Objects.requireNonNull(properties);
         PropertiesParser parser = new PropertiesParser(properties);
         try {
-             LocalServerApplication.port = parser.parseIntArray("-ports");
+             LocalServerApplication.port = parser.parseInt("-p");
         } catch (NoSuchPropertyException e) {
             e.printStackTrace();
         }

@@ -1,6 +1,5 @@
 package br.uefs.local_server;
 
-import br.uefs.central_server.CentralServer;
 import br.uefs.dto.GasStationDTO;
 
 import java.io.IOException;

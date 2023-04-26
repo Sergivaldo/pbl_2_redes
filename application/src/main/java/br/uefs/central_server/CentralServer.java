@@ -30,7 +30,7 @@ public class CentralServer extends Thread{
             InputStreamReader inputStream = new InputStreamReader(socket.getInputStream());
             BufferedReader reader = new BufferedReader(inputStream);
             String jsonGasStation = reader.readLine();
-            System.out.println("Recebeu do servidor local: " + jsonGasStation);
+            System.out.println("Recebeu do servidor " + jsonGasStation);
             GasStationDTO gasStation = new Gson().fromJson(jsonGasStation, GasStationDTO.class);
             gasStations.put(gasStation.getStationName(),gasStation);
             socket.close();
