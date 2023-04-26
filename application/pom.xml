@@ -44,6 +44,9 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<finalName>
+								carro
+							</finalName>
 							<archive>
 								<manifest>
 									<mainClass>br.uefs.car.CarApplication</mainClass>
@@ -61,6 +64,9 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<finalName>
+								posto
+							</finalName>
 							<archive>
 								<manifest>
 									<mainClass>br.uefs.gas_station.GasStationApplication</mainClass>
@@ -78,26 +84,12 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<finalName>
+								servidorLocal
+							</finalName>
 							<archive>
 								<manifest>
 									<mainClass>br.uefs.local_server.LocalServerApplication</mainClass>
-								</manifest>
-							</archive>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-						</configuration>
-					</execution>
-					<execution>
-						<id>buid-d</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<archive>
-								<manifest>
-									<mainClass>br.uefs.local_server.ReceivedCentralServer</mainClass>
 								</manifest>
 							</archive>
 							<descriptorRefs>
@@ -112,6 +104,9 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<finalName>
+								servidorCentral
+							</finalName>
 							<archive>
 								<manifest>
 									<mainClass>br.uefs.central_server.CentralServerApplication</mainClass>
@@ -122,7 +117,28 @@
 							</descriptorRefs>
 						</configuration>
 					</execution>
+					<execution>
+						<id>buid-f</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>
+								main
+							</finalName>
+							<archive>
+								<manifest>
+									<mainClass>br.uefs.Main</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+						</configuration>
+					</execution>
 				</executions>
+
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
