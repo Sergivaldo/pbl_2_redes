@@ -9,14 +9,15 @@ import java.util.Map;
 
 public class ReceivedCentralServer extends Thread{
     private static Map<String, GasStationDTO> gasStations;
+    private int port;
 
-    public ReceivedCentralServer(Map<String, GasStationDTO> gasStations){
+    public ReceivedCentralServer(Map<String, GasStationDTO> gasStations, int port){
         this.gasStations = gasStations;
     }
     public void run(){
         ServerSocket socket = null;
         try {
-            socket = new ServerSocket();
+            socket = new ServerSocket(LocalServerApplication.port);
             while (true) {
                 Socket socketCentral = socket.accept();
                 new ReceivedRequisition(socketCentral,gasStations).start();

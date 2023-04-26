@@ -21,7 +21,7 @@ public class CentralServerApplication {
         System.out.println("Abriu 9090");
         while (true) {
             Socket socketCentral = socket.accept();
-            new CentralServer(socketCentral).start();
+            new CentralServer(socketCentral, host).start();
         }
     }
 }

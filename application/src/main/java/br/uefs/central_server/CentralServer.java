@@ -15,14 +15,16 @@ import java.util.Map;
 public class CentralServer extends Thread{
     private Socket socket;
     private Map<String, GasStationDTO> gasStations;
+    private String serverHost;
 
-    public CentralServer(Socket socket){
+    public CentralServer(Socket socket, String serverHost){
         this.socket = socket;
+        this.serverHost = serverHost;
     }
 
     private void receiveGasStations(CarDTO car) throws IOException {
         for(int i = 0; i < CentralServerApplication.cloudPorts.length; i++) {
-            Socket socket = new Socket("localhost", CentralServerApplication.cloudPorts[i]);
+            Socket socket = new Socket(serverHost, CentralServerApplication.cloudPorts[i]);
             PrintStream exit = new PrintStream(socket.getOutputStream());
 
             exit.println(new Gson().toJson(car));

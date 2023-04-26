@@ -18,6 +18,6 @@ public class LocalServerApplication {
         MQTTClient MQTTClient = MQTTClientParser.parseMQTTClient(properties);
         LocalServer localServer = new LocalServer(MQTTClient, gasStations);
         localServer.start();
-        new ReceivedCentralServer(gasStations).start();
+        new ReceivedCentralServer(gasStations, port).start();
     }
 }
