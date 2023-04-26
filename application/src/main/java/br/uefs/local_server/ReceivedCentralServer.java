@@ -13,11 +13,16 @@ public class ReceivedCentralServer extends Thread{
     public ReceivedCentralServer(Map<String, GasStationDTO> gasStations){
         this.gasStations = gasStations;
     }
-    public static void main(String[] args) throws IOException {
-        ServerSocket socket = new ServerSocket(LocalServerApplication.port);
-        while (true) {
-            Socket socketCentral = socket.accept();
-            new ReceivedRequisition(socketCentral,gasStations).start();
+    public void run(){
+        ServerSocket socket = null;
+        try {
+            socket = new ServerSocket();
+            while (true) {
+                Socket socketCentral = socket.accept();
+                new ReceivedRequisition(socketCentral,gasStations).start();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
