@@ -5,6 +5,7 @@ import br.uefs.dto.CentralServerDTO;
 import br.uefs.dto.GasStationDTO;
 import br.uefs.mqtt.Listener;
 import br.uefs.mqtt.MQTTClient;
+import br.uefs.utils.Log;
 import br.uefs.utils.Mapper;
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
@@ -76,12 +77,12 @@ public class LocalServer {
 
     private class SendGasStationsTask implements Runnable {
         private Socket socket;
-        private PrintWriter out;
+        private ObjectOutputStream out;
 
         public SendGasStationsTask() {
             try {
                 socket = new Socket(centralServer.getHost(), centralServer.getGasStationsReceiverPort());
-                out = new PrintWriter(socket.getOutputStream());
+                Log.success("Conectado ao servidor central");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -89,7 +90,12 @@ public class LocalServer {
 
         @Override
         public void run() {
-            out.print(Mapper.toLocalServerDTO(getLocalServer()));
+            try {
+                out.writeObject(Mapper.toLocalServerDTO(getLocalServer()));
+                socket.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
