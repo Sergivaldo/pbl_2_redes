@@ -18,6 +18,7 @@ public class LocalServerParser {
             CentralServerDTO centralServerDTO = new CentralServerDTO(parser.parseInt("-gas_station_receiver_port"),
                     parser.parseInt("-solicitation_car_receiver_port"),parser.parseString("-central_server_host"));
             localServer = LocalServer.builder()
+                    .name(parser.parseString("-name"))
                     .gasStations(new TreeMap<>())
                     .mqttClient(MQTTClientParser.parseMQTTClient(properties))
                     .centralServer(centralServerDTO)

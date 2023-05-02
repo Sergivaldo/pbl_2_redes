@@ -62,7 +62,11 @@ public class SolicitationCarReceiverProcessor extends Thread {
         }
         Comparator<BestGasStation> comparator = Comparator.comparing(BestGasStation::getTime);
         Optional<BestGasStation> result = bestGasStations.stream().min(comparator);
-        return result.isPresent() ? result.get().getGasStation():null;
+        if(result.isPresent()){
+            System.out.println("Melhor posto externo: "+result.get().getGasStation().getStationName());
+            return result.get().getGasStation();
+        }
+        return null;
     }
 
     private double getDistance(int[] coordinatesCar, int[] coordinatesGasStation) {

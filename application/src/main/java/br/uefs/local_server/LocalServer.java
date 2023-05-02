@@ -113,13 +113,16 @@ public class LocalServer{
             }
         }
 
+
         if (localBestTime <= 350 && localBestTime > -1) {
+            System.out.println("Melhor posto local: "+ bestLocalGasStation.getStationName());
             return bestLocalGasStation;
         } else {
-
+            System.out.println("solicitação externa");
             GasStationDTO bestExternalGasStation = null;
             try {
                 bestExternalGasStation = requeredCentralServer(car);
+                System.out.println(bestExternalGasStation != null? "Melhor posto externo: "+bestExternalGasStation.getStationName():"Não há postos externos disponíveis");
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
