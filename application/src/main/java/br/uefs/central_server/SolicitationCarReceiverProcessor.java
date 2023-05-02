@@ -4,6 +4,8 @@ import br.uefs.dto.CarDTO;
 import br.uefs.dto.CentralServerDTO;
 import br.uefs.dto.GasStationDTO;
 import br.uefs.dto.LocalServerDTO;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,7 +41,7 @@ public class SolicitationCarReceiverProcessor extends Thread {
         }
     }
 
-    private GasStationDTO selectBestGasStation(CarDTO car, List<LocalServerDTO> localServers) {
+    private String selectBestGasStation(CarDTO car, List<LocalServerDTO> localServers) {
         Objects.requireNonNull(localServers);
         float maximumDistance = car.getDistanceForKMRateByPercentage() * car.getCurrentBatteryCharge();
         List<BestGasStation> bestGasStations = new ArrayList<>();
@@ -62,11 +64,17 @@ public class SolicitationCarReceiverProcessor extends Thread {
         }
         Comparator<BestGasStation> comparator = Comparator.comparing(BestGasStation::getTime);
         Optional<BestGasStation> result = bestGasStations.stream().min(comparator);
+        Gson gson = new Gson();
+        String gasStation;
         if(result.isPresent()){
+            gasStation = gson.toJson(result.get().gasStation);
             System.out.println("Melhor posto externo: "+result.get().getGasStation().getStationName());
-            return result.get().getGasStation();
+        }else{
+            System.out.println("Não há postos disponíveis");
+            gasStation = "null";
         }
-        return null;
+
+        return gasStation;
     }
 
     private double getDistance(int[] coordinatesCar, int[] coordinatesGasStation) {

@@ -74,7 +74,7 @@ public class Car {
     private class BatteryChecker implements Runnable {
         @Override
         public void run() {
-            if (battery.currentCharge <= 30) {
+            if (battery.currentCharge <= 30 && battery.currentCharge > 0) {
                 Gson gson = new Gson();
                 String message = gson.toJson(Mapper.toCarDTO(getCar()));
                 mqttClient.publish(CAR_REQUEST_RECHARGE.getValue(), message.getBytes());
@@ -108,7 +108,7 @@ public class Car {
                 if (dischargeTask != null) {
                     dischargeTask.cancel(true);
                 }
-                System.out.print("\r\uD83E\uDEAB " + currentCharge + "% ↓(" + dischargeRate + "s)           ");
+                System.out.print("bateria -> " + currentCharge + "% (" + dischargeRate + "s)\r");
                 dischargeTask = dischargeExecutor.scheduleAtFixedRate(new DischargeTask(), dischargeRate, dischargeRate, TimeUnit.SECONDS);
             }
         }
@@ -117,7 +117,7 @@ public class Car {
             @Override
             public void run() {
                 currentCharge -= currentCharge > 0 ? 5 : 0;
-                System.out.print("battery" + currentCharge + "% (" + dischargeRate + "s)          ");
+                System.out.print("bateria -> " + currentCharge + "% (" + dischargeRate + "s)\r");
             }
         }
     }
