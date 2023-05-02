@@ -22,8 +22,6 @@ import static br.uefs.mqtt.Topics.*;
 
 public class LocalServer{
     @Getter
-    private String name;
-    @Getter
     private MQTTClient mqttClient;
     @Getter
     private Map<String, GasStationDTO> gasStations;
@@ -31,11 +29,10 @@ public class LocalServer{
     private ScheduledExecutorService gasStationsExecutor = Executors.newSingleThreadScheduledExecutor();
 
     @Builder
-    public LocalServer( MQTTClient mqttClient, Map<String, GasStationDTO> gasStations, CentralServerDTO centralServer,String name) {
+    public LocalServer( MQTTClient mqttClient, Map<String, GasStationDTO> gasStations, CentralServerDTO centralServer) {
         this.mqttClient = mqttClient;
         this.gasStations = gasStations;
         this.centralServer = centralServer;
-        this.name = name;
     }
 
 

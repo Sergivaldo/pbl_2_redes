@@ -34,7 +34,6 @@ public class Mapper {
                 .builder()
                 .gasStations(localServer.getGasStations())
                 .mqttUrl(localServer.getMqttClient().getServerURI())
-                .name(localServer.getName())
                 .build();
     }
 
