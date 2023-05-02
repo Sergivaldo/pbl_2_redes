@@ -1,88 +1,65 @@
 package br.uefs.central_server;
 
-import br.uefs.dto.CarDTO;
-import br.uefs.dto.GasStationDTO;
-import com.google.gson.Gson;
+import br.uefs.dto.CentralServerDTO;
+import br.uefs.dto.LocalServerDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CentralServer extends Thread{
-    private Socket receiverSocket;
-    private Map<String, GasStationDTO> gasStations;
-    private String serverHost;
+public class CentralServer {
+    private final String host;
+    private final int solicitationCarReceiverPort;
+    private final int gasStationsReceiverPort;
+    private final List<LocalServerDTO> localServers;
 
-    public CentralServer(Socket receiverSocket, String serverHost){
-        this.receiverSocket = receiverSocket;
-        this.serverHost = serverHost;
+    @Builder
+    public CentralServer(String host, int gasStationsReceiverPort, int solicitationCarReceiverPort) {
+        this.host = host;
+        this.gasStationsReceiverPort = gasStationsReceiverPort;
+        this.solicitationCarReceiverPort = solicitationCarReceiverPort;
+        localServers = new ArrayList<>();
     }
 
-    private void receiveGasStations(CarDTO car) throws IOException {
-        for(int i = 0; i < CentralServerApplication.cloudPorts.length; i++) {
-            Socket socket = new Socket(serverHost, CentralServerApplication.cloudPorts[i]);
-            PrintStream exit = new PrintStream(socket.getOutputStream());
-
-            exit.println(new Gson().toJson(car));
-
-            InputStreamReader inputStream = new InputStreamReader(socket.getInputStream());
-            BufferedReader reader = new BufferedReader(inputStream);
-            String jsonGasStation = reader.readLine();
-            System.out.println("Recebeu do servidor " + jsonGasStation);
-            GasStationDTO gasStation = new Gson().fromJson(jsonGasStation, GasStationDTO.class);
-            gasStations.put(gasStation.getStationName(),gasStation);
-            socket.close();
-        }
+    public void start() throws IOException {
+        new SolicitationCarReceiver(solicitationCarReceiverPort, host).start();
+        new GasStationsReceiver().start();
     }
 
-    @Override
-    public void run(){
-        try {
-            InputStreamReader inputStreamReader = new InputStreamReader(receiverSocket.getInputStream());
-            BufferedReader messageReader = new BufferedReader(inputStreamReader);
-            String message = messageReader.readLine();
-            System.out.println("Recebeu do cliente" + message);
-            CarDTO car = new Gson().fromJson(messageReader, CarDTO.class);
-            receiveGasStations(car);
-
-            PrintStream outMessage = new PrintStream(receiverSocket.getOutputStream());
-            outMessage.println(new Gson().toJson(selectBestGasStation(car, gasStations)));
-
-        }catch (IOException e){
-            throw new RuntimeException(e);
-        }
-    }
-
-    private GasStationDTO selectBestGasStation(CarDTO car, Map<String,GasStationDTO> gasStations) {
-        if (gasStations.isEmpty() == true) {
-            return null;
-        }
-        GasStationDTO bestGasStation = null;
-        double bestTime = 0;
-        float maximumDistance = car.getDistanceForKMRateByPercentage() * car.getCurrentBatteryCharge();
-        Iterator<Map.Entry<String, GasStationDTO>> itr = gasStations.entrySet().iterator();
-        while (itr.hasNext()) {
-            GasStationDTO gasStation = itr.next().getValue();
-            double distance = getDistance(car.getCoordinates(), gasStation.getCoordinates());
-            if (maximumDistance >= distance) {
-                float waitingTime = gasStation.getCarsInQueue() * gasStation.getRechargeTime();
-                double time = waitingTime + (car.getTimePerKmTraveled() * distance);
-                if (bestTime == 0 || time < bestTime) {
-                    bestTime = time;
-                    bestGasStation = gasStation;
+    public class GasStationsReceiver extends Thread {
+        public void run() {
+            try {
+                ServerSocket serverSocket = new ServerSocket();
+                while (true) {
+                    Socket fogSocket = serverSocket.accept();
+                    new GasStationReceiverProcessor(localServers, fogSocket).start();
                 }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
-        return bestGasStation;
     }
 
-    private double getDistance(int[] coordinatesCar, int[] coordinatesGasStation) {
-        double x0_x1 = Math.pow((coordinatesCar[0] - coordinatesGasStation[0]), 2);
-        double y0_y1 = Math.pow((coordinatesCar[1] - coordinatesGasStation[1]), 2);
-        return Math.sqrt(x0_x1 + y0_y1);
+    @AllArgsConstructor
+    public class SolicitationCarReceiver extends Thread {
+        private int port;
+        private String host;
+
+        public void run() {
+            try {
+                ServerSocket serverSocket = new ServerSocket();
+                while (true) {
+                    Socket fogSocket = serverSocket.accept();
+                    new SolicitationCarReceiverProcessor(fogSocket, new CentralServerDTO(port, host,localServers)).start();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
     }
 }

@@ -2,12 +2,14 @@ package br.uefs.mqtt;
 
 import br.uefs.utils.Log;
 import lombok.Builder;
+import lombok.Getter;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.util.Arrays;
 
 public class MQTTClient{
+    @Getter
     private final String serverURI;
     private MqttAsyncClient client;
     private final MqttConnectOptions mqttOptions;

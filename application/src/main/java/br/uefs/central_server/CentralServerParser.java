@@ -8,34 +8,19 @@ import java.util.List;
 import static java.util.Objects.requireNonNull;
 
 public class CentralServerParser {
-    public static void parseListPorts(List<String> properties) {
+    public static CentralServer parseCentralServer(List<String> properties) {
         requireNonNull(properties);
+        CentralServer centralServer = null;
         PropertiesParser parser = new PropertiesParser(properties);
         try {
-            CentralServerApplication.cloudPorts = parser.parseIntArray("-ls_ports");
-            CentralServerApplication.host = parser.parseString("-h");
+            centralServer = CentralServer.builder()
+                    .gasStationsReceiverPort(parser.parseInt("-gas_station_receiver_port"))
+                    .solicitationCarReceiverPort(parser.parseInt("-solicitation_car_receiver_port"))
+                    .host(parser.parseString("-central_server_host"))
+                    .build();
         } catch (NoSuchPropertyException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void parseHost(List<String> properties) {
-        requireNonNull(properties);
-        PropertiesParser parser = new PropertiesParser(properties);
-        try {
-            CentralServerApplication.host = parser.parseString("-h");
-        } catch (NoSuchPropertyException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void parsePort(List<String> properties){
-        requireNonNull(properties);
-        PropertiesParser parser = new PropertiesParser(properties);
-        try {
-            CentralServerApplication.port = parser.parseInt("-p");
-        } catch (NoSuchPropertyException e) {
-            e.printStackTrace();
-        }
+        return centralServer;
     }
 }

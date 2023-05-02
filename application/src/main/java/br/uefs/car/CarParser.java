@@ -15,12 +15,14 @@ public class CarParser {
         PropertiesParser parser = new PropertiesParser(properties);
         try {
             newCar = new Car.CarBuilder()
-                    .idCar(parser.parseString("-i"))
-                    .distanceByBatteryPercent(parser.parserFloat("-d"))
-                    .coordinates(parser.parseIntArray("-c"))
-                    .timePerDistanceTraveled(parser.parserFloat("-t"))
+                    .idCar(parser.parseString("-id"))
+                    .distanceByBatteryPercent(parser.parserFloat("-distance"))
+                    .coordinates(parser.parseIntArray("-coordinates"))
+                    .timePerDistanceTraveled(parser.parserFloat("-time"))
+                    .interfacePort(parser.parseInt("-interface_port"))
+                    .interfaceHost(parser.parseString("-interface-host"))
                     .build();
-            int batteryCharge = parser.parseInt("-b");
+            int batteryCharge = parser.parseInt("-battery");
             if (batteryCharge >= 0 && batteryCharge <= 100) {
                 newCar.getBattery().setCurrentCharge(batteryCharge);
             }else{

@@ -42,15 +42,16 @@ public class Car {
     private Battery battery = new Battery();
     private GasStationDTO bestGasStation;
     private MQTTClient mqttClient;
-    private CarInterface carInterface = new CarInterface();
+    private CarInterface carInterface;
 
     @Builder
-    public Car(int[] coordinates, String idCar, float distanceByBatteryPercent, float timePerDistanceTraveled, MQTTClient mqttClient) {
+    public Car(int[] coordinates, String idCar, float distanceByBatteryPercent, float timePerDistanceTraveled, MQTTClient mqttClient,int interfacePort,String interfaceHost) {
         this.mqttClient = mqttClient;
         this.coordinates = coordinates;
         this.idCar = idCar;
         this.distanceByBatteryPercent = distanceByBatteryPercent;
         this.timePerDistanceTraveled = timePerDistanceTraveled;
+        this.carInterface = new CarInterface(interfacePort,interfaceHost);
     }
 
     public void start() {
@@ -122,6 +123,14 @@ public class Car {
     }
 
     private class CarInterface {
+        private int interfacePort;
+        private String interfaceHost;
+
+        public CarInterface(int interfacePort,String interfaceHost) {
+            this.interfacePort = interfacePort;
+            this.interfaceHost = interfaceHost;
+        }
+
         public void start() {
             HttpRouter router = new HttpRouter();
             HttpRoute route = new HttpRoute("/best_gas_station");
@@ -139,8 +148,12 @@ public class Car {
             });
             route.addMethod(httpRouteMethod);
             router.addRoute(route);
+            Configuration config = new Configuration();
+
+            config.setServerPort(interfacePort);
+            config.setServerHost(interfaceHost);
             FrameworkApplication api = new FrameworkApplication(
-                    new Configuration(),
+                    config,
                     router,
                     new HttpMessageHandler(),
                     new HttpMessageParser()

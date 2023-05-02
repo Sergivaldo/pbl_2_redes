@@ -14,11 +14,11 @@ public class GasStationParser {
         PropertiesParser parser = new PropertiesParser(properties);
         try {
             newGasStation = GasStation.builder()
-                    .name(parser.parseString("-n"))
-                    .carsInQueue(parser.parseInt("-q"))
-                    .coordinates(parser.parseIntArray("-c"))
-                    .stationId(parser.parseString("-i"))
-                    .rechargeTime(parser.parseInt("-r"))
+                    .name(parser.parseString("-name"))
+                    .carsInQueue(parser.parseInt("-queue"))
+                    .coordinates(parser.parseIntArray("-coordinates"))
+                    .stationId(parser.parseString("-id"))
+                    .rechargeTime(parser.parseInt("-recharge_time"))
                     .build();
         } catch (NoSuchPropertyException e) {
             e.printStackTrace();

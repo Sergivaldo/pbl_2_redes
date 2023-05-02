@@ -15,9 +15,8 @@ public class MQTTClientParser {
         MQTTClient newMQTTClient = null;
         PropertiesParser parser = new PropertiesParser(properties);
         try {
-
             newMQTTClient = new MQTTClient.MQTTClientBuilder()
-                    .serverURI(BASE_URL + parser.parseString("-h") + ":" + parser.parseString("-p"))
+                    .serverURI(BASE_URL + parser.parseString("-mqtt_host") + ":" + parser.parseString("-mqtt_port"))
                     .build();
         } catch (NoSuchPropertyException e) {
             e.printStackTrace();
