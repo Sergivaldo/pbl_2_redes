@@ -22,6 +22,8 @@ import static br.uefs.mqtt.Topics.*;
 
 public class LocalServer{
     @Getter
+    private String name;
+    @Getter
     private MQTTClient mqttClient;
     @Getter
     private Map<String, GasStationDTO> gasStations;
@@ -29,10 +31,11 @@ public class LocalServer{
     private ScheduledExecutorService gasStationsExecutor = Executors.newSingleThreadScheduledExecutor();
 
     @Builder
-    public LocalServer( MQTTClient mqttClient, Map<String, GasStationDTO> gasStations, CentralServerDTO centralServer) {
+    public LocalServer( MQTTClient mqttClient, Map<String, GasStationDTO> gasStations, CentralServerDTO centralServer,String name) {
         this.mqttClient = mqttClient;
         this.gasStations = gasStations;
         this.centralServer = centralServer;
+        this.name = name;
     }
 
 
@@ -50,12 +53,13 @@ public class LocalServer{
     //GasStationDTO
     private GasStationDTO requeredCentralServer(CarDTO car) throws IOException, ClassNotFoundException {
 
-        Socket socket = new Socket(centralServer.getHost(), centralServer.getPort());
+        Socket socket = new Socket(centralServer.getHost(), centralServer.getSolicitationCarReceiverPort());
         ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
         out.writeObject(car);
 
         ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
         socket.close();
+        System.out.println(((GasStationDTO) in.readObject()).getStationName());
         return (GasStationDTO) in.readObject();
     }
 
@@ -77,7 +81,7 @@ public class LocalServer{
             String payload = new String(mqttMessage.getPayload());
             GasStationDTO gasStation = new Gson().fromJson(payload, GasStationDTO.class);
             gasStations.put(gasStation.getStationName(), gasStation);
-            System.out.println("Posto " + gasStation.getStationName() + " se cadastrou\n" + "Postos cadastrados :" + gasStations.size() + "\n\n");
+            System.out.println("Postos cadastrados :" + gasStations.size() + "\n\n");
         }));
     }
 
@@ -139,7 +143,7 @@ public class LocalServer{
         private PrintWriter out;
         public SendGasStationsTask() {
             try {
-                socket = new Socket(centralServer.getHost(),centralServer.getPort());
+                socket = new Socket(centralServer.getHost(),centralServer.getGasStationsReceiverPort());
                 out = new PrintWriter(socket.getOutputStream());
             } catch (IOException e) {
                 throw new RuntimeException(e);

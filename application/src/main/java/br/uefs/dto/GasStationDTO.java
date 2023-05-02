@@ -4,9 +4,11 @@ import com.google.gson.JsonObject;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.Serializable;
+
 @Getter
 @Builder
-public class GasStationDTO {
+public class GasStationDTO implements Serializable {
     private int[] coordinates;
     private String stationName;
     private String stationId;

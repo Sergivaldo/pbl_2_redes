@@ -24,6 +24,7 @@ public class GasStationReceiverProcessor extends Thread{
             localServers.removeIf(l -> l.getName().equals(localServerDTO));
             localServers.add(localServerDTO);
             fogSocket.close();
+            System.out.println(localServerDTO.getName());
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

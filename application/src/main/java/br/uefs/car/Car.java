@@ -117,7 +117,7 @@ public class Car {
             @Override
             public void run() {
                 currentCharge -= currentCharge > 0 ? 5 : 0;
-                System.out.print("\r\uD83E\uDEAB " + currentCharge + "% ↓(" + dischargeRate + "s)          ");
+                System.out.print("battery" + currentCharge + "% (" + dischargeRate + "s)          ");
             }
         }
     }

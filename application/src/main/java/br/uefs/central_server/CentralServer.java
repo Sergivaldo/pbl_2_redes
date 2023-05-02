@@ -2,6 +2,7 @@ package br.uefs.central_server;
 
 import br.uefs.dto.CentralServerDTO;
 import br.uefs.dto.LocalServerDTO;
+import br.uefs.utils.Log;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -33,7 +34,8 @@ public class CentralServer {
     public class GasStationsReceiver extends Thread {
         public void run() {
             try {
-                ServerSocket serverSocket = new ServerSocket();
+                ServerSocket serverSocket = new ServerSocket(gasStationsReceiverPort);
+                Log.success("Socket conectado na porta "+gasStationsReceiverPort);
                 while (true) {
                     Socket fogSocket = serverSocket.accept();
                     new GasStationReceiverProcessor(localServers, fogSocket).start();
@@ -51,7 +53,8 @@ public class CentralServer {
 
         public void run() {
             try {
-                ServerSocket serverSocket = new ServerSocket();
+                ServerSocket serverSocket = new ServerSocket(solicitationCarReceiverPort);
+                Log.success("Socket conectado na porta "+ solicitationCarReceiverPort);
                 while (true) {
                     Socket fogSocket = serverSocket.accept();
                     new SolicitationCarReceiverProcessor(fogSocket, new CentralServerDTO(port, host,localServers)).start();

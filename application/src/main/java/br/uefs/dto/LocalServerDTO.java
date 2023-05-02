@@ -1,13 +1,13 @@
 package br.uefs.dto;
 
-import br.uefs.dto.GasStationDTO;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.util.Map;
 
 @Getter
-public class LocalServerDTO {
+public class LocalServerDTO implements Serializable{
     private String name;
     private String mqttUrl;
     private Map<String, GasStationDTO> gasStations;

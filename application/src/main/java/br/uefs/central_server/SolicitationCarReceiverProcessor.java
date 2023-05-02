@@ -29,7 +29,7 @@ public class SolicitationCarReceiverProcessor extends Thread {
         try {
             ObjectInputStream in = new ObjectInputStream(receiverSocket.getInputStream());
             CarDTO car = (CarDTO) in.readObject();
-
+            System.out.println(car.getIdCar());
             ObjectOutputStream out = new ObjectOutputStream(receiverSocket.getOutputStream());
             out.writeObject(selectBestGasStation(car, centralServer.getLocalServers()));
             receiverSocket.close();
@@ -61,7 +61,8 @@ public class SolicitationCarReceiverProcessor extends Thread {
             bestGasStations.add(bestGasStation);
         }
         Comparator<BestGasStation> comparator = Comparator.comparing(BestGasStation::getTime);
-        return bestGasStations.stream().min(comparator).get().getGasStation();
+        Optional<BestGasStation> result = bestGasStations.stream().min(comparator);
+        return result.isPresent() ? result.get().getGasStation():null;
     }
 
     private double getDistance(int[] coordinatesCar, int[] coordinatesGasStation) {
@@ -72,7 +73,7 @@ public class SolicitationCarReceiverProcessor extends Thread {
 
     @Setter
     @Getter
-    private class BestGasStation{
+    private class BestGasStation {
         private double time;
         private GasStationDTO gasStation;
     }

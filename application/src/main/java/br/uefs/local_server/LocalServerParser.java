@@ -2,7 +2,6 @@ package br.uefs.local_server;
 
 import br.uefs.dto.CentralServerDTO;
 import br.uefs.exceptions.NoSuchPropertyException;
-import br.uefs.mqtt.MQTTClient;
 import br.uefs.mqtt.MQTTClientParser;
 import br.uefs.utils.PropertiesParser;
 
@@ -16,8 +15,8 @@ public class LocalServerParser {
         PropertiesParser parser = new PropertiesParser(properties);
         LocalServer localServer = null;
         try {
-            CentralServerDTO centralServerDTO = new CentralServerDTO(parser.parseInt("-central_server_port")
-                    ,parser.parseString("-central_server_host"));
+            CentralServerDTO centralServerDTO = new CentralServerDTO(parser.parseInt("-gas_station_receiver_port"),
+                    parser.parseInt("-solicitation_car_receiver_port"),parser.parseString("-central_server_host"));
             localServer = LocalServer.builder()
                     .gasStations(new TreeMap<>())
                     .mqttClient(MQTTClientParser.parseMQTTClient(properties))

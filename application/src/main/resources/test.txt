@@ -4,14 +4,14 @@
 
 // Postos
 
--mqtt_host 172.16.103.2 -mqtt_port 3131 -name posto01 -queue 5 -coordinates [50,75] -id 001 -recharge_time 10
+-mqtt_host 127.0.0.1 -mqtt_port 1887 -name posto01 -queue 5 -coordinates [50,75] -id 001 -recharge_time 10
 
 
 // Servidor Local
-
--mqtt_host 172.16.103.2 -mqtt_port 3131 -central_server_host 127.0.0.1 -central_server_port 4141
+-mqtt_host 172.16.103.2 -mqtt_port 3131 -central_server_host 127.0.0.1 -gas_station_receiver_port 6666 -solicitation_car_receiver_port 7777
 
 
 // Servidor Central
 
 -central_server_host 127.0.0.1 -gas_station_receiver_port 6666 -solicitation_car_receiver_port 7777
+
