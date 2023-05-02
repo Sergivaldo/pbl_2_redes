@@ -21,7 +21,10 @@ public class GasStationReceiverProcessor extends Thread{
         try {
             ObjectInputStream in = new ObjectInputStream(fogSocket.getInputStream());
             LocalServerDTO localServerDTO = (LocalServerDTO) in.readObject();
-            localServers.removeIf(l -> l.getName().equals(localServerDTO));
+            System.out.println(localServerDTO.getName());
+            if(!localServers.isEmpty()){
+                localServers.removeIf(l -> l.getName().equals(localServerDTO.getName()));
+            }
             localServers.add(localServerDTO);
             fogSocket.close();
             System.out.println(localServerDTO.getName());

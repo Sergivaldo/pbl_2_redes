@@ -76,23 +76,16 @@ public class LocalServer {
     }
 
     private class SendGasStationsTask implements Runnable {
-        private Socket socket;
-        private ObjectOutputStream out;
-
-        public SendGasStationsTask() {
-            try {
-                socket = new Socket(centralServer.getHost(), centralServer.getGasStationsReceiverPort());
-                Log.success("Conectado ao servidor central");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
 
         @Override
         public void run() {
             try {
+                Socket socket = new Socket(centralServer.getHost(), centralServer.getGasStationsReceiverPort());
+                Log.success("Conectado ao servidor central");
+                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                 out.writeObject(Mapper.toLocalServerDTO(getLocalServer()));
                 socket.close();
+                System.out.println("Enviado");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

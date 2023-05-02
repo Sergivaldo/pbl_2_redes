@@ -1,0 +1,11 @@
+version: "2"
+services:
+  server:
+#    image: "jacobdevecomp/pbl_redes2:central_server-server"
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    restart: always
+    network_mode:
+      "host"
