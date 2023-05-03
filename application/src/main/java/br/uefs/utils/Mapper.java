@@ -32,6 +32,7 @@ public class Mapper {
     public static LocalServerDTO toLocalServerDTO(LocalServer localServer){
         return LocalServerDTO
                 .builder()
+                .name(localServer.getName())
                 .gasStations(localServer.getGasStations())
                 .mqttUrl(localServer.getMqttClient().getServerURI())
                 .build();

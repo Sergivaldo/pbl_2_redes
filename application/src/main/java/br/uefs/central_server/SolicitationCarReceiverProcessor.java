@@ -43,32 +43,39 @@ public class SolicitationCarReceiverProcessor extends Thread {
 
     private String selectBestGasStation(CarDTO car, List<LocalServerDTO> localServers) {
         Objects.requireNonNull(localServers);
-        float maximumDistance = car.getDistanceForKMRateByPercentage() * car.getCurrentBatteryCharge();
+
         List<BestGasStation> bestGasStations = new ArrayList<>();
         for (LocalServerDTO localServer : localServers) {
-            BestGasStation bestGasStation = null;
+            BestGasStation bestGasStation = new BestGasStation();
+            bestGasStation.setTime(-1);
             Iterator<Map.Entry<String, GasStationDTO>> itr = localServer.getGasStations().entrySet().iterator();
             while (itr.hasNext()) {
                 GasStationDTO gasStation = itr.next().getValue();
                 double distance = getDistance(car.getCoordinates(), gasStation.getCoordinates());
-                if (maximumDistance >= distance) {
-                    float waitingTime = gasStation.getCarsInQueue() * gasStation.getRechargeTime();
-                    double time = waitingTime + (car.getTimePerKmTraveled() * distance);
-                    if (time < bestGasStation.getTime()) {
-                        bestGasStation.setTime(time);
-                        bestGasStation.setGasStation(gasStation);
-                    }
+                float waitingTime = gasStation.getCarsInQueue() * gasStation.getRechargeTime();
+                double time = waitingTime + (car.getTimePerKmTraveled() * distance);
+                if (time < bestGasStation.getTime() || bestGasStation.getTime() < 0) {
+                    bestGasStation.setTime(time);
+                    bestGasStation.setGasStation(gasStation);
                 }
             }
             bestGasStations.add(bestGasStation);
         }
-        Comparator<BestGasStation> comparator = Comparator.comparing(BestGasStation::getTime);
-        Optional<BestGasStation> result = bestGasStations.stream().min(comparator);
+        BestGasStation selectGasStation = null;
+        for(int i = 0; i< bestGasStations.size(); i++){
+            if(selectGasStation == null){
+                selectGasStation = bestGasStations.get(i);
+            }else{
+                if(bestGasStations.get(i).getTime() <= selectGasStation.getTime()){
+                    selectGasStation = bestGasStations.get(i);
+                }
+            }
+        }
         Gson gson = new Gson();
         String gasStation;
-        if(result.isPresent()){
-            gasStation = gson.toJson(result.get().gasStation);
-            System.out.println("Melhor posto externo: "+result.get().getGasStation().getStationName());
+        if(selectGasStation != null){
+            gasStation = gson.toJson(selectGasStation.getGasStation());
+            System.out.println("Melhor posto externo: "+selectGasStation.getGasStation().getStationName());
         }else{
             System.out.println("Não há postos disponíveis");
             gasStation = "null";
