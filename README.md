@@ -36,15 +36,13 @@ O sistema possui os seguintes componentes:
 
 &nbsp;&nbsp;&nbsp;[**1.** Diagrama do Projeto](#secao1)
 
-&nbsp;&nbsp;&nbsp;[**2.** Protocolos utilizados](#secao2)
+&nbsp;&nbsp;&nbsp;[**2.** Carro](#secao2)
 
-&nbsp;&nbsp;&nbsp;[**3.** Carro](#secao3)
+&nbsp;&nbsp;&nbsp;[**3.** Posto](#secao3)
 
-&nbsp;&nbsp;&nbsp;[**4.** Posto](#secao4)
+&nbsp;&nbsp;&nbsp;[**4.** Servidor Local](#secao4)
 
-&nbsp;&nbsp;&nbsp;[**5.** Servidor Local](#secao5)
-
-&nbsp;&nbsp;&nbsp;[**6.** Servidor Central](#secao6)
+&nbsp;&nbsp;&nbsp;[**5.** Servidor Central](#secao5)
 
 ### Diagrama do Projeto
 
@@ -56,6 +54,14 @@ O diagrama acima mostra a arquitetura da solução utilizando computação em n�
 Quando um carro solicita a busca por postos disponíveis, a névoa irá verificar se existe algum na região, caso não tenha, será pedido a nuvem um posto disponível para o veículo pedinte. A nuvem possui uma lista com os postos de todas as regiões, dessa forma quando um posto não é encontrado em uma determinada região, outros podem ser buscados em regiões diferentes.
 
 Essa solução se mostrou eficiente, já que o processamento de informações fica dividido. Em vez de sempre buscar no servidor central um posto, o que acarretaria em uma carga maior para o mesmo, um servidor local pode fazer esse processamento com os postos que tem acesso dessa forma diminuindo o trabalho da nuvem e também o tempo de resposta já que o servidor central processa mais informações(postos de todas as regiões) do que um servidor local.
+
+### Carro
+
+### Posto
+
+### Servidor Local
+
+### Servidor Central
 
 #### ⬆️ [Voltar ao topo](#inicio)
 
