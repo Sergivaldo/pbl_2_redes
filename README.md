@@ -32,5 +32,19 @@ O sistema possui os seguintes componentes:
 - Comunicação via socket TCP com os servidores locais para recebimento do estado dos postos e solicitação de postos disponíveis para um carro.
 - Processa o melhor posto de várias regiões para um determinado carro.
 
+### Seções 
+
+&nbsp;&nbsp;&nbsp;[**1.** Diagrama do Projeto](#secao1)
+
+&nbsp;&nbsp;&nbsp;[**2.** Protocolos utilizados](#secao2)
+
+&nbsp;&nbsp;&nbsp;[**3.** Carro](#secao3)
+
+&nbsp;&nbsp;&nbsp;[**4.** Posto](#secao4)
+
+&nbsp;&nbsp;&nbsp;[**5.** Servidor Local](#secao5)
+
+&nbsp;&nbsp;&nbsp;[**6.** Servidor Central](#secao6)
+
 #### ⬆️ [Voltar ao topo](#inicio)
 
