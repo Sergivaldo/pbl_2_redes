@@ -14,7 +14,7 @@ O sistema possui os seguintes componentes:
 
 **Carro**
 - Possui interface baseada em API REST para consultar melhor posto.
-- Comunicação MQTT para solicitar postos de abastecimento quando sua bateria está menor ou igual a 30% de carga.
+- Comunicação MQTT para solicitar postos de abastecimento quando sua bateria está baixa.
 
 **Posto**
 - Comunicação MQTT para transmitir a quantidade de carros em fila.
@@ -56,6 +56,10 @@ Quando um carro solicita a busca por postos disponíveis, a névoa irá verifica
 Essa solução se mostrou eficiente, já que o processamento de informações fica dividido. Em vez de sempre buscar no servidor central um posto, o que acarretaria em uma carga maior para o mesmo, um servidor local pode fazer esse processamento com os postos que tem acesso dessa forma diminuindo o trabalho da nuvem e também o tempo de resposta já que o servidor central processa mais informações(postos de todas as regiões) do que um servidor local.
 
 ### Carro
+
+Basicamente, um carro possui uma interface baseada em API REST e a capacidade de se comunicar via protocolo MQTT. O automóvel também possui uma bateria que descarrega em um intervalo de tempo que varia de acordo com a sua taxa de descarga que pode ser lenta(a cada 7 segundos), normal(a cada 5 segundos) ou rápida(a cada 3 segundos).
+
+Caso a carga atual da bateria esteja menor ou igual a 30%, o carro começará a solicitar por postos de abastecimento enviando mensagens que serão capitadas pelo servidor local da região, caso a névoa(servidor local) encontre um posto, este poderá ser visualizado pela interface através da rota `/best_gas_station`. Se nenhum posto for encontrado após a solicitação, será mostrada uma mensagem na mesma rota informando que não há posto disponíveis.
 
 ### Posto
 
