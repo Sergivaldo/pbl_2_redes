@@ -36,8 +36,6 @@ O sistema possui os seguintes componentes:
 
 &nbsp;&nbsp;&nbsp;[**1.** Diagrama do Projeto](#secao1)
 
-![diagrama_redes_2](https://user-images.githubusercontent.com/72475500/235815532-af91ecbd-1f4c-46f0-b7b9-364c36990eeb.png)
-
 &nbsp;&nbsp;&nbsp;[**2.** Protocolos utilizados](#secao2)
 
 &nbsp;&nbsp;&nbsp;[**3.** Carro](#secao3)
@@ -47,6 +45,9 @@ O sistema possui os seguintes componentes:
 &nbsp;&nbsp;&nbsp;[**5.** Servidor Local](#secao5)
 
 &nbsp;&nbsp;&nbsp;[**6.** Servidor Central](#secao6)
+
+### Diagrama do Projeto
+![diagrama_redes_2](https://user-images.githubusercontent.com/72475500/235815532-af91ecbd-1f4c-46f0-b7b9-364c36990eeb.png)
 
 #### ⬆️ [Voltar ao topo](#inicio)
 
