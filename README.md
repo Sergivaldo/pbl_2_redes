@@ -52,6 +52,7 @@ O sistema possui os seguintes componentes:
 ![diagrama_redes_2](https://user-images.githubusercontent.com/72475500/235815532-af91ecbd-1f4c-46f0-b7b9-364c36990eeb.png)
 
 O diagrama acima mostra a arquitetura da solução utilizando computação em névoa. Basicamente, o sistema possui vários servidores(névoas) distribuidos em regiões diferentes, cada um destes se conecta a um broker para receber mensagens dos postos e dos carros e também se conectam ao servidor central(nuvem) enviando informações dos postos ou solicitando postos disponíveis a nuvem.
+
 Quando um carro solicita a busca por postos disponíveis, a névoa irá verificar se existe algum na região, caso não tenha, será pedido a nuvem um posto disponível para o veículo pedinte. A nuvem possui uma lista com os postos de todas as regiões, dessa forma quando um posto não é encontrado em uma determinada região, outros podem ser buscados em regiões diferentes.
 
 Essa solução se mostrou eficiente, já que o processamento de informações fica dividido. Em vez de sempre buscar no servidor central um posto, o que acarretaria em uma carga maior para o mesmo, um servidor local pode fazer esse processamento com os postos que tem acesso dessa forma diminuindo o trabalho da nuvem e também o tempo de resposta já que o servidor central processa mais informações(postos de todas as regiões) do que um servidor local.
