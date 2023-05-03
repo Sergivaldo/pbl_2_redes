@@ -62,6 +62,7 @@ Basicamente, um carro possui uma interface baseada em API REST e a capacidade de
 Caso a carga atual da bateria esteja menor ou igual a 30%, o carro começará a solicitar por postos de abastecimento enviando mensagens que serão capitadas pelo servidor local da região, caso a névoa(servidor local) encontre um posto, este poderá ser visualizado pela interface através da rota `/best_gas_station`. Se nenhum posto for encontrado após a solicitação, será mostrada uma mensagem na mesma rota informando que não há posto disponíveis.
 
 ### Posto
+O posto é a entidade que possui menos funções, ele somente envia periodicamente informações da sua fila para o servidor local também via protocolo MQTT. Essa fila é atualizada aleatoriamente.
 
 ### Servidor Local
 
