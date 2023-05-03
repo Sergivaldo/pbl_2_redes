@@ -47,6 +47,8 @@ O sistema possui os seguintes componentes:
 &nbsp;&nbsp;&nbsp;[**6.** Servidor Central](#secao6)
 
 ### Diagrama do Projeto
+
+
 ![diagrama_redes_2](https://user-images.githubusercontent.com/72475500/235815532-af91ecbd-1f4c-46f0-b7b9-364c36990eeb.png)
 
 #### ⬆️ [Voltar ao topo](#inicio)
