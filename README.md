@@ -1,7 +1,7 @@
 <a id="inicio"></a>
 ## Mi Concorrência e Conectividade - Problema 2
 
-**Dupla: ** Sergivaldo e Jacob 
+**Dupla:** Sergivaldo e Jacob 
 
 Este documento mostra os detalhes de implementação de um
 sistema de carregamento inteligente para veículos elétricos.
